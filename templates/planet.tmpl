@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="/css/index.css">
+  <link rel="stylesheet" type="text/css" href="/css/planet.css">
+</head>
+<body>
+  <main class="planet_page">
+      <div class="nav_planet">
+        <a href="/#choose_planet" class="back_button">
+          <svg viewBox="0 0 24 24" width="50px" heigth="50px" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M5.46967 5.46967C5.76256 5.17678 6.23744 5.17678 6.53033 5.46967L18.5303 17.4697C18.8232 17.7626 18.8232 18.2374 18.5303 18.5303C18.2374 18.8232 17.7626 18.8232 17.4697 18.5303L5.46967 6.53033C5.17678 6.23744 5.17678 5.76256 5.46967 5.46967Z" fill="var(--gray-light)"></path> <path fillRule="evenodd" clipRule="evenodd" d="M18.5303 5.46967C18.8232 5.76256 18.8232 6.23744 18.5303 6.53033L6.53035 18.5303C6.23745 18.8232 5.76258 18.8232 5.46969 18.5303C5.17679 18.2374 5.17679 17.7626 5.46968 17.4697L17.4697 5.46967C17.7626 5.17678 18.2374 5.17678 18.5303 5.46967Z" fill="var(--gray-light)"></path> </g></svg>
+        </a>
+      </div>
+      <div class="content">
+        <div class="blog">
+          <div class="decoration_block"></div>
+          <div class="about">
+            <h1>{{.Name}}</h1>
+            <p>{{.Info}}</p>
+            <div class="info">
+              <h3>Открытие:</h3>
+              <p>{{.Discovered}}</p>
+            </div>
+            <div class="info">
+              <h3>Масса:</h3>
+              <p>{{.Mass}}</p>
+            </div>
+            <div class="info">
+              <h3>Расстояние до земли:</h3>
+              <p>{{.Distance}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="image">
+          <img src="{{.Src}}" alt="{{.Name}}" />
+        </div>
+      </div>
+    </main>
+</body>
+</html>
