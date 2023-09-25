@@ -29,10 +29,15 @@
               <h3>Расстояние до земли:</h3>
               <p>{{.Distance}}</p>
             </div>
+            <div class="info">
+              <form action="/delete?q={{.Id}}" method="POST" class="form">
+                <button type="submit" class="button">Удалить планету</button>
+              </form>
+            </div>
           </div>
         </div>
         <div class="image">
-          <img src="{{.Src}}" alt="{{.Name}}" />
+          <img src="/images/{{.ImageName}}" alt="{{.Name}}" />
         </div>
       </div>
     </main>
