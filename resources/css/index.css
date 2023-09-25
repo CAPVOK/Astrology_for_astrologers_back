@@ -88,6 +88,28 @@ a {
   position: relative;
 }
 
+.form {
+  display: flex;
+  gap: 10px;
+}
+.form .input {
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.button {
+  padding: 5px 8px;
+  border: 1px solid var(--accent);
+  text-align: center;
+  width: fit-content;
+  color: var(--gray-light);
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.button:hover {
+  color: white;
+}
+
 /* Reset and base styles  */
 * {
   padding: 0px;

@@ -18,7 +18,6 @@
       <h2 class="choose_planet" id="choose_planet">Выберите <span class="colored">планету</span> ниже, чтобы узнать больше о ней:</h2>
       <div class="menu">
         <a href="/#choose_planet" class="button">Все планеты</a>
-        <a href="/show-planets#choose_planet" class="button">Планеты нашей солнечной системы</a>
          <form action="/search" method="GET" class="form">
           <input type="text" id="searchQuery" name="q" class="input" required placeholder="Введите название">
           <button type="submit" class="button">Искать</button>
@@ -26,7 +25,7 @@
       </div>
       <div class="planets" id="planets">
         {{range .planets}}
-          <a class="card" href="{{.Href}}">
+          <a class="card" href="/planets/{{.Id}}">
             <div class="planet">
             <div class="circle" style="background-color: {{.Color1}}">
               <div class="color_blocks">
