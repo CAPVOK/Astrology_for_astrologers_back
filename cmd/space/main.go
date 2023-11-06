@@ -2,8 +2,7 @@ package main
 
 import (
 	"log"
-	/* "space/internal/api" */
-	"space/internal/app"
+	app "space/internal/app"
 )
 
 func main() {
