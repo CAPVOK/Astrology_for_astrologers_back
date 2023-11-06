@@ -1,14 +1,17 @@
 package repository
 
 import (
+	"time"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"space/internal/app/ds"
+	"space/internal/app/minioclient"
 )
 
 type Repository struct {
-	db *gorm.DB
+	db          *gorm.DB
+	minioClient *minioclient.MinioClient
 }
 
 func New(dsn string) (*Repository, error) {
@@ -16,32 +19,68 @@ func New(dsn string) (*Repository, error) {
 	if err != nil {
 		return nil, err
 	}
+	minioClient, err := minioclient.NewMinioClient()
+	if err != nil {
+		return nil, err
+	}
 
 	return &Repository{
-		db: db,
+		db:          db,
+		minioClient: minioClient,
 	}, nil
 }
 
-func (r *Repository) GetActivePlanets() (*[]ds.Planet, error) {
-	var planets []ds.Planet
-
-	if err := r.db.Where("is_active = ?", true).Find(&planets).Error; err != nil {
-		return nil, err
-	}
-	return &planets, nil
+type PlanetClient struct {
+	Id         uint `gorm:"primarykey:autoIncrement"`
+	Name       string
+	Discovered *string
+	Mass       *string
+	Distance   *string
+	Info       *string
+	Color1     *string
+	Color2     *string
+	ImageName  *string
 }
 
-func (r *Repository) GetActivePlanetById(id int) (*ds.Planet, error) {
-	planet := &ds.Planet{}
-	if err := r.db.First(planet, id).Error; err != nil {
-		return nil, err
-	}
-	return planet, nil
+type PlanetImage struct {
+	PlanetID   uint `gorm:"primarykey:autoIncrement"`
+	PlanetName string
+	ImageName  string
 }
 
-func (r *Repository) DeactivatePlanetByID(id int) error {
-	if err := r.db.Exec("UPDATE planets SET is_active=false WHERE id= ?", id).Error; err != nil {
-		return err
-	}
-	return nil
+type ConstellationWithPlanets struct {
+	Id               uint `gorm:"primaryKey"`
+	Name             string
+	StartDate        time.Time
+	EndDate          time.Time
+	ModeratorId      *uint
+	UserId           uint
+	Status           string
+	CreationDate     time.Time
+	FormationDate    *time.Time
+	ConfirmationDate *time.Time
+	Planets          []PlanetImage
+}
+
+type ConstellationClient struct {
+	Id               uint
+	Name             string
+	StartDate        time.Time
+	EndDate          time.Time
+	Status           string
+	CreationDate     time.Time
+	FormationDate    *time.Time
+	ConfirmationDate *time.Time
+}
+
+type ConstellationClientWithPlanets struct {
+	Id               uint
+	Name             string
+	StartDate        time.Time
+	EndDate          time.Time
+	Status           string
+	CreationDate     time.Time
+	FormationDate    *time.Time
+	ConfirmationDate *time.Time
+	Planets          []PlanetImage
 }

@@ -3,17 +3,17 @@ package ds
 import "time"
 
 type Planet struct {
-	Id             uint `gorm:"primarykey"`
+	Id             uint `gorm:"primarykey:autoIncrement"`
 	Name           string
-	Discovered     string
-	Mass           string
-	Distance       string
-	Info           string
-	Color1         string
-	Color2         string
-	ImageName      string
-	IsActive       bool
-	Constellations []Constellation `gorm:"many2many:constellation_planet"`
+	Discovered     *string         `gorm:"default:'Неизвестно'"`
+	Mass           *string         `gorm:"default:'Неизвестно'"`
+	Distance       *string         `gorm:"default:'Неизвестно'"`
+	Info           *string         `gorm:"default:'Неизвестно'"`
+	Color1         *string         `gorm:"default:'#ababab'"`
+	Color2         *string         `gorm:"default:'#8a8a8a'"`
+	ImageName      *string         `gorm:"default:'unknown.png'"`
+	IsActive       *bool           `gorm:"default:true"`
+	Constellations []Constellation `gorm:"many2many:constellations_planets"`
 }
 
 type User struct {
@@ -29,11 +29,16 @@ type Constellation struct {
 	Name             string
 	StartDate        time.Time
 	EndDate          time.Time
-	ModeratorId      uint
+	ModeratorId      *uint
 	UserId           uint
 	Status           string
 	CreationDate     time.Time
-	FormationDate    time.Time
-	ConfirmationDate time.Time
-	Planets          []Planet `gorm:"many2many:constellation_planet"`
+	FormationDate    *time.Time
+	ConfirmationDate *time.Time
+	Planets          []Planet `gorm:"many2many:constellations_planets"`
+}
+
+type ConstellationsPlanets struct {
+	PlanetID        uint `gorm:"primaryKey;index"`
+	ConstellationID uint `gorm:"primaryKey;index"`
 }

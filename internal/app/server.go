@@ -2,10 +2,7 @@ package app
 
 import (
 	"log"
-	"net/http"
-	"space/internal/app/ds"
-	"strconv"
-	"strings"
+	"space/internal/api"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,86 +10,35 @@ import (
 func (a *Application) StartServer() {
 	log.Println("Server start up")
 
+	handler := api.NewHandler(a.repo)
 	r := gin.Default()
 
-	r.LoadHTMLGlob("templates/*")
+	PlanetGroup := r.Group("/planet")
+	{
+		PlanetGroup.GET("/", handler.GetPlanets)             // список всех планет
+		PlanetGroup.GET("/:id", handler.GetPlanetById)       // одна планета
+		PlanetGroup.DELETE("/:id", handler.DeletePlanetById) // удалить планету по ид
+		PlanetGroup.PUT("/:id", handler.ChangePlanetById)    // изменить планету по ид
+		PlanetGroup.POST("/", handler.CreatePlanet)          // создать планету
+		PlanetGroup.POST("/:id", handler.AddPlanetById)      // добавить планету в созвездие
+	}
 
-	r.Static("/images", "./resources/images")
-	r.Static("/fonts", "./resources/fonts")
-	r.Static("/data", "./resources/data")
-	r.Static("/css", "./resources/css")
+	StellaGroup := r.Group("/constellation")
+	{
+		StellaGroup.GET("/", handler.GetConstellations)             // все созвездия
+		StellaGroup.GET("/:id", handler.GetConstellationById)       // одно созвездие с планетами
+		StellaGroup.PUT("/:id", handler.ChangeConstellationById)    // изменить поля созвездия
+		StellaGroup.DELETE("/:id", handler.DeleteConstellationById) // удалить созвездие
+		StellaGroup.PUT("/inprogress", handler.DoConstellationInProgress)
+		StellaGroup.PUT("/cancel/:id", handler.DoConstelltionCanceledById)
+		StellaGroup.PUT("/complete/:id", handler.DoConstelltionCompletedById)
+		StellaGroup.DELETE("/remove/:id", handler.RemovePlanetById) // удалить планету из созвездия по ид планеты
+	}
 
-	r.GET("/", func(c *gin.Context) {
-		planets, err := a.repo.GetActivePlanets()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		data := gin.H{
-			"planets": planets,
-		}
-		c.HTML(http.StatusOK, "mainPage.tmpl", data)
-	})
-
-	r.GET("/planets/:id", func(c *gin.Context) {
-		id, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			log.Print(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		planet, err := a.repo.GetActivePlanetById(id)
-		if err != nil {
-			log.Print(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.HTML(http.StatusOK, "planet.tmpl", planet)
-	})
-
-	r.GET("/search", func(c *gin.Context) {
-		planets, err := a.repo.GetActivePlanets()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		planetSlice := *planets
-		searchQuery := c.DefaultQuery("q", "")
-		var foundPlanets []ds.Planet
-		for _, planet := range planetSlice {
-			if strings.HasPrefix(strings.ToLower(planet.Name), strings.ToLower(searchQuery)) {
-				foundPlanets = append(foundPlanets, planet)
-			}
-		}
-		data := gin.H{
-			"planets": foundPlanets,
-		}
-		c.HTML(http.StatusOK, "mainPage.tmpl", data)
-	})
-
-	r.POST("/delete", func(c *gin.Context) {
-		id, err := strconv.Atoi(c.DefaultQuery("q", ""))
-		log.Print(c.DefaultQuery("q", ""))
-		if err != nil {
-			log.Print(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		err = a.repo.DeactivatePlanetByID(id)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		planets, err := a.repo.GetActivePlanets()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		data := gin.H{
-			"planets": planets,
-		}
-		c.HTML(http.StatusOK, "mainPage.tmpl", data)
-	})
+	MinioGroup := r.Group("/minio")
+	{
+		MinioGroup.POST("/:id", handler.AddImage) // добавить картинку для планеты
+	}
 
 	r.Run()
 	// go run cmd/space/main.go
