@@ -15,7 +15,7 @@ func (h *Handler) GetPlanets(c *gin.Context) {
 		return
 	}
 	if isAdmin {
-		searchQuery := c.DefaultQuery("q", "")
+		searchQuery := c.DefaultQuery("searchByName", "")
 		foundPlanets, err := h.Repo.SearchPlanetsByNameAdmin(searchQuery)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -23,7 +23,7 @@ func (h *Handler) GetPlanets(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, gin.H{"planets": foundPlanets})
 	} else {
-		searchQuery := c.DefaultQuery("q", "")
+		searchQuery := c.DefaultQuery("searchByName", "")
 		foundPlanets, err := h.Repo.SearchPlanetsByName(searchQuery)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
