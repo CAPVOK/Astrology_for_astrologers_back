@@ -4,6 +4,7 @@ import (
 	"log"
 	"space/internal/api"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,6 +13,7 @@ func (a *Application) StartServer() {
 
 	handler := api.NewHandler(a.repo)
 	r := gin.Default()
+	r.Use(cors.Default())
 
 	PlanetGroup := r.Group("/planet")
 	{
