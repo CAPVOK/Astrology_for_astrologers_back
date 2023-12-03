@@ -23,6 +23,7 @@ func (a *Application) StartServer() {
 		PlanetGroup.PUT("/:id", handler.ChangePlanetById)    // изменить планету по ид
 		PlanetGroup.POST("/", handler.CreatePlanet)          // создать планету
 		PlanetGroup.POST("/:id", handler.AddPlanetById)      // добавить планету в созвездие
+		PlanetGroup.POST("/image/:id", handler.AddImage)     // добавить картинку для планеты
 	}
 
 	StellaGroup := r.Group("/constellation")
@@ -35,11 +36,6 @@ func (a *Application) StartServer() {
 		StellaGroup.PUT("/cancel/:id", handler.DoConstelltionCanceledById)
 		StellaGroup.PUT("/complete/:id", handler.DoConstelltionCompletedById)
 		StellaGroup.DELETE("/remove/:id", handler.RemovePlanetById) // удалить планету из созвездия по ид планеты
-	}
-
-	MinioGroup := r.Group("/minio")
-	{
-		MinioGroup.POST("/:id", handler.AddImage) // добавить картинку для планеты
 	}
 
 	r.Run()

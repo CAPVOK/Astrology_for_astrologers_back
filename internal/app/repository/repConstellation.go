@@ -2,18 +2,26 @@ package repository
 
 import (
 	"space/internal/app/ds"
+	"strings"
 	"time"
 )
 
 /* созвездия */
 
 /* список всех активных заявок */
-func (r *Repository) GetActiveConstellations() (*[]ds.Constellation, error) {
+func (r *Repository) GetActiveConstellations(startFormationDate string, endFormationDate string, status string) (*[]ds.Constellation, error) {
 	var constellations []ds.Constellation
+	status = strings.ToLower(status + "%")
 	/* var constellationsClient []ConstellationClient */
 
-	if err := r.db.Where("status != 'deleted'").Order("creation_date").Find(&constellations).Error; err != nil {
-		return nil, err
+	if startFormationDate != "" && endFormationDate != "" {
+		if err := r.db.Where("status != 'deleted' AND status LIKE ? AND formation_date BETWEEN ? AND ?", status, startFormationDate, endFormationDate).Order("creation_date").Find(&constellations).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := r.db.Where("status != 'deleted' AND status LIKE ?", status).Order("creation_date").Find(&constellations).Error; err != nil {
+			return nil, err
+		}
 	}
 	/* for _, constellation := range constellations {
 		constellationClient := ConstellationClient{
@@ -32,12 +40,21 @@ func (r *Repository) GetActiveConstellations() (*[]ds.Constellation, error) {
 }
 
 /* список активных созвездий для юзера */
-func (r *Repository) GetActiveConstellationsByUser(userId int) (*[]ConstellationClient, error) {
+func (r *Repository) GetActiveConstellationsByUser(userId int, startFormationDate string, endFormationDate string, status string) (*[]ConstellationClient, error) {
 	var constellations []ds.Constellation
 	var constellationsClient []ConstellationClient
-	if err := r.db.Where("status != 'deleted' AND user_id = ?", userId).Order("creation_date").Find(&constellations).Error; err != nil {
-		return nil, err
+	status = strings.ToLower(status + "%")
+
+	if startFormationDate != "" && endFormationDate != "" {
+		if err := r.db.Where("status != 'deleted' AND user_id = ? AND status LIKE ? AND formation_date  BETWEEN ? AND ?", userId, status, startFormationDate, endFormationDate).Order("creation_date").Find(&constellations).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := r.db.Where("status != 'deleted' AND status LIKE ? AND user_id = ?", status, userId).Order("creation_date").Find(&constellations).Error; err != nil {
+			return nil, err
+		}
 	}
+
 	for _, constellation := range constellations {
 		constellationClient := ConstellationClient{
 			Id:               constellation.Id,

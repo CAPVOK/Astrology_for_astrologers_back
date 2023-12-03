@@ -11,18 +11,21 @@ import (
 func (h *Handler) GetConstellations(c *gin.Context) {
 	USERID, isAdmin, err := singleton()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Ошибка авторизации"})
 		return
 	}
+	startFormationDate := c.DefaultQuery("startFormationDate", "")
+	endFormationDate := c.DefaultQuery("endFormationDate", "")
+	status := c.DefaultQuery("status", "")
 	if isAdmin {
-		constellations, err := h.Repo.GetActiveConstellations()
+		constellations, err := h.Repo.GetActiveConstellations(startFormationDate, endFormationDate, status)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"constellations": constellations})
 	} else {
-		constellations, err := h.Repo.GetActiveConstellationsByUser(USERID)
+		constellations, err := h.Repo.GetActiveConstellationsByUser(USERID, startFormationDate, endFormationDate, status)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -87,7 +90,7 @@ func (h *Handler) DeleteConstellationById(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		constellations, err := h.Repo.GetActiveConstellationsByUser(USERID)
+		constellations, err := h.Repo.GetActiveConstellationsByUser(USERID, "", "", "")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
