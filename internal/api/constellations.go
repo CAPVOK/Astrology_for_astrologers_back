@@ -8,13 +8,32 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetConstellations godoc
+// @Summary      returns the list of constellations
+// @Description  returns the list of constellations
+// @Tags         expeditions
+// @Produce      json
+// @Success      200  {object} object{constellations=ds.Constellation}
+// @Failure      400  {object} object{status=string, message=string}
+// @Failure      500  {object} object{status=string, message=string}
+// @Router       /constellation/ [get]
 func (h *Handler) GetConstellations(c *gin.Context) {
-	USERID, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
+	value, exists := c.Get("sessionContext")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "must be authorized",
+		})
 		return
 	}
-	if isAdmin {
+	sc := value.(ds.SessionContext)
+
+	//USERID, isAdmin, err := singleton()
+	//if err != nil {
+	//	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
+	//	return
+	//}
+	if sc.Role == ds.Moderator {
 		constellations, err := h.Repo.GetActiveConstellations()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -22,7 +41,7 @@ func (h *Handler) GetConstellations(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, gin.H{"constellations": constellations})
 	} else {
-		constellations, err := h.Repo.GetActiveConstellationsByUser(USERID)
+		constellations, err := h.Repo.GetActiveConstellationsByUser(sc.UserID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -170,13 +189,32 @@ func (h *Handler) DoConstellationInProgress(c *gin.Context) {
 	}
 }
 
+// DoConstelltionCanceledById godoc
+// @Summary      cancels the cancellation
+// @Description  cancels the cancellation by id
+// @Tags         expeditions
+// @Produce      json
+// @Param        id path uint true "id of constellation"
+// @Success      200  {object} object{message=string,constellations=ds.Constellation}
+// @Failure      400  {object} object{status=string,message=string}
+// @Failure      500  {object} object{status=string,message=string}
+// @Router       /constellation/cancel/{id} [get]
 func (h *Handler) DoConstelltionCanceledById(c *gin.Context) {
-	USERID, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
+	//USERID, isAdmin, err := singleton()
+	//if err != nil {
+	//	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
+	//	return
+	//}
+	value, exists := c.Get("sessionContext")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "must be authorized",
+		})
 		return
 	}
-	if isAdmin {
+	sc := value.(ds.SessionContext)
+	if sc.Role == ds.Moderator {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid constellation ID"})
@@ -191,7 +229,7 @@ func (h *Handler) DoConstelltionCanceledById(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot update status to 'canceled' for a constellation that is not in 'inprogress' status"})
 			return
 		}
-		if err := h.Repo.UpdateStatusToCanceled(id, uint(USERID)); err != nil {
+		if err := h.Repo.UpdateStatusToCanceled(id, uint(sc.UserID)); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}

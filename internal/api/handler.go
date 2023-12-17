@@ -5,9 +5,13 @@ import (
 )
 
 type Handler struct {
-	Repo *repository.Repository
+	Repo      *repository.Repository
+	RedisRepo repository.Redis
 }
 
-func NewHandler(repo *repository.Repository) *Handler {
-	return &Handler{Repo: repo}
+func NewHandler(repo *repository.Repository, redisRepo repository.Redis) *Handler {
+	return &Handler{
+		Repo:      repo,
+		RedisRepo: redisRepo,
+	}
 }

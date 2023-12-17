@@ -16,12 +16,20 @@ type Planet struct {
 	Constellations []Constellation `gorm:"many2many:constellations_planets"`
 }
 
+//type User struct {
+//	Id       uint `gorm:"primaryKey"`
+//	Login    string
+//	Password string
+//	Admin    bool
+//	User     []User
+//}
+
 type User struct {
-	Id       uint `gorm:"primaryKey"`
-	Login    string
-	Password string
-	Admin    bool
-	User     []User
+	ID       uint   `gorm:"primarykey;autoIncrement"`
+	Email    string `gorm:"type:varchar(90); unique"`
+	Password []byte `gorm:"type:bytea" json:"password,omitempty"`
+	ImageRef string `gorm:"type:varchar(90)" json:"imageRef,omitempty"Z`
+	Role     Role   `gorm:"type:int;" json:"role,omitempty"`
 }
 
 type Constellation struct {
