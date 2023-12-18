@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/redis/go-redis/v9"
 	"log"
 	"os"
 	"space/internal/app/ds"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type Redis struct {
@@ -16,7 +17,10 @@ type Redis struct {
 }
 
 func NewRedis() Redis {
+	log.Println("NewRedis")
 	r := Connect()
+
+	log.Println("NewRedis end")
 
 	return Redis{
 		client: r,

@@ -26,7 +26,7 @@ type Planet struct {
 
 type User struct {
 	ID       uint   `gorm:"primarykey;autoIncrement"`
-	Email    string `gorm:"type:varchar(90); unique"`
+	Email    string `gorm:"type:varchar(30); unique"`
 	Password []byte `gorm:"type:bytea" json:"password,omitempty"`
 	ImageRef string `gorm:"type:varchar(90)" json:"imageRef,omitempty"Z`
 	Role     Role   `gorm:"type:int;" json:"role,omitempty"`
