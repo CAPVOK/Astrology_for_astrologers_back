@@ -28,11 +28,10 @@ func (h *Handler) GetConstellations(c *gin.Context) {
 	}
 	sc := value.(ds.SessionContext)
 
-	//USERID, isAdmin, err := singleton()
-	//if err != nil {
-	//	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
-	//	return
-	//}
+	startFormationDate := c.DefaultQuery("startFormationDate", "")
+	endFormationDate := c.DefaultQuery("endFormationDate", "")
+	status := c.DefaultQuery("status", "")
+
 	if sc.Role == ds.Moderator {
 		constellations, err := h.Repo.GetActiveConstellations()
 		if err != nil {
@@ -41,7 +40,7 @@ func (h *Handler) GetConstellations(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, gin.H{"constellations": constellations})
 	} else {
-		constellations, err := h.Repo.GetActiveConstellationsByUser(sc.UserID)
+		constellations, err := h.Repo.GetActiveConstellationsByUser(sc.UserID,startFormationDate, endFormationDate, status)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -51,17 +50,21 @@ func (h *Handler) GetConstellations(c *gin.Context) {
 }
 
 func (h *Handler) GetConstellationById(c *gin.Context) {
-	USERID, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
+	value, exists := c.Get("sessionContext")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "must be authorized",
+		})
 		return
 	}
+	sc := value.(ds.SessionContext)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid constellation ID"})
 		return
 	}
-	if isAdmin {
+	if sc.Role == ds.Moderator {
 		constellation, err := h.Repo.GetConstellationByIdAdmin(id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -69,7 +72,7 @@ func (h *Handler) GetConstellationById(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, gin.H{"constellation": constellation})
 	} else {
-		constellation, err := h.Repo.GetConstellationById(id, USERID)
+		constellation, err := h.Repo.GetConstellationById(id, sc.UserID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -79,17 +82,24 @@ func (h *Handler) GetConstellationById(c *gin.Context) {
 }
 
 func (h *Handler) DeleteConstellationById(c *gin.Context) {
-	USERID, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	value, exists := c.Get("sessionContext")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "must be authorized",
+		})
 		return
 	}
+	sc := value.(ds.SessionContext)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid constellation ID"})
 		return
 	}
-	if isAdmin {
+	startFormationDate := c.DefaultQuery("startFormationDate", "")
+	endFormationDate := c.DefaultQuery("endFormationDate", "")
+	status := c.DefaultQuery("status", "")
+	if sc.Role == ds.Moderator  {
 		c.JSON(http.StatusForbidden, gin.H{"message": "no rules"})
 		return
 	} else {
@@ -98,15 +108,15 @@ func (h *Handler) DeleteConstellationById(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		if err := h.Repo.UpdateStatusToDeleted(id, USERID); err != nil {
+		if err := h.Repo.UpdateStatusToDeleted(id, sc.UserID); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		if err := h.Repo.DeleteAllPlanetsFromConstellation(id, USERID); err != nil {
+		if err := h.Repo.DeleteAllPlanetsFromConstellation(id, sc.UserID); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		constellations, err := h.Repo.GetActiveConstellationsByUser(USERID)
+		constellations, err := h.Repo.GetActiveConstellationsByUser(sc.UserID,startFormationDate,endFormationDate,status)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -116,17 +126,21 @@ func (h *Handler) DeleteConstellationById(c *gin.Context) {
 }
 
 func (h *Handler) ChangeConstellationById(c *gin.Context) {
-	USERID, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
+	value, exists := c.Get("sessionContext")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "must be authorized",
+		})
 		return
 	}
+	sc := value.(ds.SessionContext)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid constellation ID"})
 		return
 	}
-	if isAdmin {
+	if sc.Role == ds.Moderator  {
 		c.JSON(http.StatusForbidden, gin.H{"message": "no rules"})
 		return
 	} else {
@@ -148,7 +162,7 @@ func (h *Handler) ChangeConstellationById(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		newConstellation, err := h.Repo.GetConstellationById(id, USERID)
+		newConstellation, err := h.Repo.GetConstellationById(id, sc.UserID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -158,16 +172,20 @@ func (h *Handler) ChangeConstellationById(c *gin.Context) {
 }
 
 func (h *Handler) DoConstellationInProgress(c *gin.Context) {
-	USERID, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
+	value, exists := c.Get("sessionContext")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "must be authorized",
+		})
 		return
 	}
-	if isAdmin {
+	sc := value.(ds.SessionContext)
+	if sc.Role == ds.Moderator {
 		c.JSON(http.StatusForbidden, gin.H{"message": "no rules"})
 		return
 	} else {
-		constellation, err := h.Repo.GetCreatedConstellationByUser(USERID)
+		constellation, err := h.Repo.GetCreatedConstellationByUser(sc.UserID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "There is no created constellation"})
 			return
@@ -176,11 +194,11 @@ func (h *Handler) DoConstellationInProgress(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot update status to 'inprogress' for a constellation that is not in 'created' status"})
 			return
 		}
-		if err := h.Repo.UpdateStatusToInProgress(int(constellation.Id), uint(USERID)); err != nil {
+		if err := h.Repo.UpdateStatusToInProgress(int(constellation.Id), uint(sc.UserID)); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Failed making status 'inprogress'"})
 			return
 		}
-		newConstellation, err := h.Repo.GetConstellationById(int(constellation.Id), USERID)
+		newConstellation, err := h.Repo.GetConstellationById(int(constellation.Id), sc.UserID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -200,11 +218,6 @@ func (h *Handler) DoConstellationInProgress(c *gin.Context) {
 // @Failure      500  {object} object{status=string,message=string}
 // @Router       /constellation/cancel/{id} [get]
 func (h *Handler) DoConstelltionCanceledById(c *gin.Context) {
-	//USERID, isAdmin, err := singleton()
-	//if err != nil {
-	//	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
-	//	return
-	//}
 	value, exists := c.Get("sessionContext")
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -246,12 +259,16 @@ func (h *Handler) DoConstelltionCanceledById(c *gin.Context) {
 }
 
 func (h *Handler) DoConstelltionCompletedById(c *gin.Context) {
-	USERID, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
+	value, exists := c.Get("sessionContext")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "must be authorized",
+		})
 		return
 	}
-	if isAdmin {
+	sc := value.(ds.SessionContext)
+	if sc.Role == ds.Moderator {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid constellation ID"})
@@ -266,7 +283,7 @@ func (h *Handler) DoConstelltionCompletedById(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot update status to 'completed' for a constellation that is not in 'inprogress' status"})
 			return
 		}
-		if err := h.Repo.UpdateStatusToCompleted(id, uint(USERID)); err != nil {
+		if err := h.Repo.UpdateStatusToCompleted(id, uint(sc.UserID)); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -283,12 +300,16 @@ func (h *Handler) DoConstelltionCompletedById(c *gin.Context) {
 }
 
 func (h *Handler) RemovePlanetById(c *gin.Context) {
-	USERID, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "auth error"})
+	value, exists := c.Get("sessionContext")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "must be authorized",
+		})
 		return
 	}
-	if isAdmin {
+	sc := value.(ds.SessionContext)
+	if sc.Role == ds.Moderator  {
 		c.JSON(http.StatusForbidden, gin.H{"message": "no rules"})
 		return
 	} else {
@@ -297,7 +318,7 @@ func (h *Handler) RemovePlanetById(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid planet ID"})
 			return
 		}
-		constellation, err := h.Repo.GetCreatedConstellationByUser(USERID)
+		constellation, err := h.Repo.GetCreatedConstellationByUser(sc.UserID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "no created constellatin"})
 			return

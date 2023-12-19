@@ -46,6 +46,18 @@ type Constellation struct {
 	Planets          []Planet `gorm:"many2many:constellations_planets"`
 }
 
+type ConstellationsRequest struct {
+	Id               uint `gorm:"primaryKey"`
+	Name             string
+	StartDate        time.Time
+	EndDate          time.Time
+	Status           string
+	CreationDate     time.Time
+	FormationDate    *time.Time
+	ConfirmationDate *time.Time
+	UserEmail		 string
+}
+
 type ConstellationsPlanets struct {
 	PlanetID        uint `gorm:"primaryKey;index"`
 	ConstellationID uint `gorm:"primaryKey;index"`
