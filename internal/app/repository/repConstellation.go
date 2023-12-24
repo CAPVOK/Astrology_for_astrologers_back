@@ -33,27 +33,26 @@ func (r *Repository) GetActiveConstellations() (*[]ds.Constellation, error) {
 }
 
 /* список активных созвездий для юзера */
-func (r *Repository) GetActiveConstellationsByUser(userId int,startFormationDate, endFormationDate, status string ) ([]ds.ConstellationsRequest, error) {
+func (r *Repository) GetActiveConstellationsByUser(userId int, startFormationDate, endFormationDate, status string) ([]ds.ConstellationsRequest, error) {
 	status = strings.ToLower(status + "%")
 	query := r.db.Table("constellations").
-	Select("DISTINCT constellations.id, constellations.name, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.status, users.email").
-	Joins("JOIN constellations_planets ON constellations.id = constellations_planets.constellation_id").
-	Joins("JOIN planets ON planets.id = constellations_planets.planet_id").
-	Joins("JOIN users ON users.id = constellations.user_id").
-	Where("constellations.status  LIKE ? AND constellations.user_id = ? AND constellations.status != 'deleted'", status, userId)
+		Select("DISTINCT constellations.id, constellations.name, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.status, users.email").
+		Joins("JOIN constellations_planets ON constellations.id = constellations_planets.constellation_id").
+		Joins("JOIN planets ON planets.id = constellations_planets.planet_id").
+		Joins("JOIN users ON users.id = constellations.user_id").
+		Where("constellations.status  LIKE ? AND constellations.user_id = ? AND constellations.status != 'deleted'", status, userId)
 
 	if startFormationDate != "" && endFormationDate != "" {
 		query = query.Where("constellations.formation_date BETWEEN ? AND ?", startFormationDate, endFormationDate)
 	}
 
 	var constellations []ds.ConstellationsRequest
-    if err := query.Scan(&constellations).Error; err != nil {
-        return nil, err
-    }
-	
+	if err := query.Scan(&constellations).Error; err != nil {
+		return nil, err
+	}
+
 	return constellations, nil
 }
-
 
 func (r *Repository) GetDistinctPlanetImagesForConstellation(constellationID int) ([]PlanetImage, error) {
 	var planetImages []PlanetImage
@@ -280,4 +279,12 @@ func (r *Repository) DeleteAllPlanetsFromConstellation(id int, userId int) error
 	}
 
 	return nil
+}
+
+func (r *Repository) UpdateConstellationAccessByModerator(cid uint, access string) error {
+	currentTime := time.Now()
+
+	err := r.db.Table("constellations").Where("id = ?", cid).Update("confirmation_date", currentTime).Update("status", access).Error
+
+	return err
 }

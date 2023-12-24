@@ -258,6 +258,47 @@ func (h *Handler) DoConstelltionCanceledById(c *gin.Context) {
 	}
 }
 
+func (h *Handler) UpdateConstellationByAdmin(c *gin.Context) {
+	value, exists := c.Get("sessionContext")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "необходимо авторизоваться",
+		})
+		return
+	}
+
+	sc := value.(ds.SessionContext)
+	if sc.Role == ds.Moderator {
+		var jsonData map[string]interface{}
+		cid, ok := jsonData["Constellations_id"].(float64)
+		if !ok {
+			c.JSON(http.StatusBadRequest, "поле контрибьютор должно быть передано")
+			return
+		}
+		if cid <= 0 {
+			c.JSON(http.StatusBadRequest, "id контрибьютора не может быть отрицательным")
+			return
+		}
+		access, ok := jsonData["Access"].(string)
+		if !ok {
+			c.JSON(http.StatusBadRequest, "поле доступ должно быть заполнено")
+			return
+		}
+		if access == "canceled" || access == "completed" {
+			err := h.Repo.UpdateConstellationAccessByModerator(uint(cid), access)
+			if err != nil {
+				return err
+			}
+		}
+
+	} else {
+		c.JSON(http.StatusForbidden, gin.H{"message": "no rules"})
+		return
+	}
+
+}
+
 func (h *Handler) DoConstelltionCompletedById(c *gin.Context) {
 	value, exists := c.Get("sessionContext")
 	if !exists {
