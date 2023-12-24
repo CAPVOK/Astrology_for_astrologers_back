@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"space/internal/app/ds"
 	"space/internal/app/repository"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Middleware struct {
@@ -31,21 +32,29 @@ func (m *Middleware) IsAuth() gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 			return
 		}
-		if c.Expires.After(time.Now()) {
+
+		if c.Expires.Before(time.Now()) {
+			// Check if the session has expired
 			ctx.AbortWithStatus(http.StatusUnauthorized)
+			return
 		}
+
 		sessionToken := c.Value
 		sc, err := m.rr.SessionExists(sessionToken)
 		if err != nil {
 			ctx.AbortWithStatusJSON(ds.GetHttpStatusCode(err), err.Error())
 			return
 		}
+
 		if sc.UserID == 0 {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
+		ctx.Set("userID", sc.UserID)
+		ctx.Set("role", sc.Role)
 		ctx.Set("sessionContext", sc)
+
 		ctx.Next()
 	}
 }

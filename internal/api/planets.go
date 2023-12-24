@@ -9,12 +9,9 @@ import (
 )
 
 func (h *Handler) GetPlanets(c *gin.Context) {
-	USERID, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Неавторизован"})
-		return
-	}
-	if isAdmin {
+	USERID := c.GetInt("userID")
+	isAdmin := c.GetInt("role")
+	if isAdmin == 2 {
 		searchQuery := c.DefaultQuery("q", "")
 		foundPlanets, err := h.Repo.SearchPlanetsByNameAdmin(searchQuery)
 		if err != nil {
@@ -54,12 +51,12 @@ func (h *Handler) GetPlanetById(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	_, isAdmin, err := singleton()
+	isAdmin := c.GetInt("role")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Не авторизован"})
 		return
 	}
-	if isAdmin {
+	if isAdmin == 2 {
 		planet, err := h.Repo.GetPlanetById(id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Планета не найдена"})
@@ -78,12 +75,8 @@ func (h *Handler) GetPlanetById(c *gin.Context) {
 }
 
 func (h *Handler) DeletePlanetById(c *gin.Context) {
-	_, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Ошибка авторизации"})
-		return
-	}
-	if isAdmin {
+	isAdmin := c.GetInt("role")
+	if isAdmin == 2 {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -112,12 +105,9 @@ func (h *Handler) DeletePlanetById(c *gin.Context) {
 }
 
 func (h *Handler) ChangePlanetById(c *gin.Context) {
-	_, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Неавторизован"})
-		return
-	}
-	if isAdmin {
+	isAdmin := c.GetInt("role")
+
+	if isAdmin == 2 {
 		var updatedPlanet ds.Planet
 		if err := c.BindJSON(&updatedPlanet); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка запроса"})
@@ -150,12 +140,8 @@ func (h *Handler) ChangePlanetById(c *gin.Context) {
 }
 
 func (h *Handler) CreatePlanet(c *gin.Context) {
-	_, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Ошибка авторизации"})
-		return
-	}
-	if isAdmin {
+	isAdmin := c.GetInt("role")
+	if isAdmin == 2 {
 		var newPlanet ds.Planet
 		if err := c.BindJSON(&newPlanet); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка запроса"})
@@ -178,12 +164,9 @@ func (h *Handler) CreatePlanet(c *gin.Context) {
 }
 
 func (h *Handler) AddPlanetById(c *gin.Context) {
-	USERID, isAdmin, err := singleton()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Ошибка авторизации"})
-		return
-	}
-	if isAdmin {
+	USERID := c.GetInt("userID")
+	isAdmin := c.GetInt("role")
+	if isAdmin == 2 {
 		c.JSON(http.StatusForbidden, gin.H{"message": "Недостаточно прав"})
 		return
 	} else {

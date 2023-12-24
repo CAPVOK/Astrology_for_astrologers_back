@@ -35,6 +35,7 @@ type User struct {
 type Constellation struct {
 	Id               uint `gorm:"primaryKey"`
 	Name             string
+	Email            string
 	StartDate        time.Time
 	EndDate          time.Time
 	ModeratorId      *uint
@@ -55,7 +56,7 @@ type ConstellationsRequest struct {
 	CreationDate     time.Time
 	FormationDate    *time.Time
 	ConfirmationDate *time.Time
-	UserEmail		 string
+	UserEmail        string
 }
 
 type ConstellationsPlanets struct {
