@@ -26,10 +26,13 @@ func (h *Handler) GetPlanets(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		constellation, err := h.Repo.GetCreatedConstellationByUser(USERID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "planets": foundPlanets, "constellationId": "", "message": "Созвездие не найдено"})
-			return
+		var constellation *ds.Constellation
+		if USERID != 0 {
+			constellation, err = h.Repo.GetCreatedConstellationByUser(USERID)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "planets": foundPlanets, "constellationId": "", "message": "Созвездие не найдено"})
+				return
+			}
 		}
 		newConst := map[string]interface{}{
 			"Id": constellation.Id,
