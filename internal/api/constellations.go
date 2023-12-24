@@ -288,7 +288,8 @@ func (h *Handler) UpdateConstellationByAdmin(c *gin.Context) {
 		if access == "canceled" || access == "completed" {
 			err := h.Repo.UpdateConstellationAccessByModerator(uint(cid), access)
 			if err != nil {
-				return err
+				c.JSON(http.StatusInternalServerError, err.Error())
+				return
 			}
 		}
 
