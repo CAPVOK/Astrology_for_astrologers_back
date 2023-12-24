@@ -53,6 +53,7 @@ func (a *Application) StartServer() {
 			StellaGroup.PUT("/inprogress", handler.DoConstellationInProgress)
 			StellaGroup.PUT("/cancel/:id", handler.DoConstelltionCanceledById)
 			StellaGroup.PUT("/complete/:id", handler.DoConstelltionCompletedById)
+			StellaGroup.PUT("/admin/:id", handler.UpdateConstellationByAdmin)
 			StellaGroup.DELETE("/remove/:id", handler.RemovePlanetById) // удалить планету из созвездия по ид планеты
 		}
 
