@@ -22,7 +22,7 @@ func (h *Handler) GetConstellations(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "must be authorized",
+			"message": "Вы должны быть авторизованы",
 		})
 		return
 	}
@@ -40,7 +40,7 @@ func (h *Handler) GetConstellations(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, gin.H{"constellations": constellations})
 	} else {
-		constellations, err := h.Repo.GetActiveConstellationsByUser(sc.UserID,startFormationDate, endFormationDate, status)
+		constellations, err := h.Repo.GetActiveConstellationsByUser(sc.UserID, startFormationDate, endFormationDate, status)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -54,14 +54,14 @@ func (h *Handler) GetConstellationById(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "must be authorized",
+			"message": "Вы должны быть авторизованы",
 		})
 		return
 	}
 	sc := value.(ds.SessionContext)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid constellation ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный id созвездия"})
 		return
 	}
 	if sc.Role == ds.Moderator {
@@ -86,20 +86,20 @@ func (h *Handler) DeleteConstellationById(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "must be authorized",
+			"message": "вы должны быть авторизованы",
 		})
 		return
 	}
 	sc := value.(ds.SessionContext)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid constellation ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный id созвездия"})
 		return
 	}
 	startFormationDate := c.DefaultQuery("startFormationDate", "")
 	endFormationDate := c.DefaultQuery("endFormationDate", "")
 	status := c.DefaultQuery("status", "")
-	if sc.Role == ds.Moderator  {
+	if sc.Role == ds.Moderator {
 		c.JSON(http.StatusForbidden, gin.H{"message": "no rules"})
 		return
 	} else {
@@ -116,12 +116,12 @@ func (h *Handler) DeleteConstellationById(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		constellations, err := h.Repo.GetActiveConstellationsByUser(sc.UserID,startFormationDate,endFormationDate,status)
+		constellations, err := h.Repo.GetActiveConstellationsByUser(sc.UserID, startFormationDate, endFormationDate, status)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Status updated to 'deleted'", "constellations": constellations})
+		c.JSON(http.StatusOK, gin.H{"message": "Удалено", "constellations": constellations})
 	}
 }
 
@@ -130,23 +130,23 @@ func (h *Handler) ChangeConstellationById(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "must be authorized",
+			"message": "Необходимо авторизоваться",
 		})
 		return
 	}
 	sc := value.(ds.SessionContext)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid constellation ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный id созвездия"})
 		return
 	}
-	if sc.Role == ds.Moderator  {
-		c.JSON(http.StatusForbidden, gin.H{"message": "no rules"})
+	if sc.Role == ds.Moderator {
+		c.JSON(http.StatusForbidden, gin.H{"message": "недостаточно прав"})
 		return
 	} else {
 		var updatedConstellation ds.Constellation
 		if err := c.BindJSON(&updatedConstellation); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ошибка при получении данных"})
 			return
 		}
 		constellation, err := h.Repo.GetConstellationByIdAdmin(id)
@@ -155,7 +155,7 @@ func (h *Handler) ChangeConstellationById(c *gin.Context) {
 			return
 		}
 		if constellation.Status != "created" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot update constellation that is not in 'created' status"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ошибка при обновлении статуса"})
 			return
 		}
 		if err := h.Repo.UpdateConstellationByID(id, &updatedConstellation); err != nil {
@@ -167,7 +167,7 @@ func (h *Handler) ChangeConstellationById(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Сonstellations updated successfully", "constellation": newConstellation})
+		c.JSON(http.StatusOK, gin.H{"message": "созвездие обновлено успешно", "constellation": newConstellation})
 	}
 }
 
@@ -176,26 +176,26 @@ func (h *Handler) DoConstellationInProgress(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "must be authorized",
+			"message": "необходимо авторизоваться",
 		})
 		return
 	}
 	sc := value.(ds.SessionContext)
 	if sc.Role == ds.Moderator {
-		c.JSON(http.StatusForbidden, gin.H{"message": "no rules"})
+		c.JSON(http.StatusForbidden, gin.H{"message": "недостатчно прав"})
 		return
 	} else {
 		constellation, err := h.Repo.GetCreatedConstellationByUser(sc.UserID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "There is no created constellation"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "нету только созданных созвездий"})
 			return
 		}
 		if constellation.Status != "created" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot update status to 'inprogress' for a constellation that is not in 'created' status"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ошибка при обновлении статуса"})
 			return
 		}
 		if err := h.Repo.UpdateStatusToInProgress(int(constellation.Id), uint(sc.UserID)); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Failed making status 'inprogress'"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "ошибка при обновлении статуса"})
 			return
 		}
 		newConstellation, err := h.Repo.GetConstellationById(int(constellation.Id), sc.UserID)
@@ -203,7 +203,7 @@ func (h *Handler) DoConstellationInProgress(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Status updated to 'inprogress'", "constellation": newConstellation})
+		c.JSON(http.StatusOK, gin.H{"message": "статус обновлен", "constellation": newConstellation})
 	}
 }
 
@@ -222,7 +222,7 @@ func (h *Handler) DoConstelltionCanceledById(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "must be authorized",
+			"message": "необходимо авторизоваться",
 		})
 		return
 	}
@@ -230,7 +230,7 @@ func (h *Handler) DoConstelltionCanceledById(c *gin.Context) {
 	if sc.Role == ds.Moderator {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid constellation ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "неверный id созвездия"})
 			return
 		}
 		constellation, err := h.Repo.GetConstellationByIdAdmin(id)
@@ -239,7 +239,7 @@ func (h *Handler) DoConstelltionCanceledById(c *gin.Context) {
 			return
 		}
 		if constellation.Status != "inprogress" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot update status to 'canceled' for a constellation that is not in 'inprogress' status"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ошибка обновления статуса"})
 			return
 		}
 		if err := h.Repo.UpdateStatusToCanceled(id, uint(sc.UserID)); err != nil {
@@ -251,9 +251,9 @@ func (h *Handler) DoConstelltionCanceledById(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Status updated to 'canceled'", "constellation": constellation})
+		c.JSON(http.StatusOK, gin.H{"message": "статус обновлен", "constellation": constellation})
 	} else {
-		c.JSON(http.StatusForbidden, gin.H{"message": "no rules"})
+		c.JSON(http.StatusForbidden, gin.H{"message": "недостаточно прав"})
 		return
 	}
 }
@@ -263,7 +263,7 @@ func (h *Handler) DoConstelltionCompletedById(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "must be authorized",
+			"message": "необходимо авторизоваться",
 		})
 		return
 	}
@@ -271,7 +271,7 @@ func (h *Handler) DoConstelltionCompletedById(c *gin.Context) {
 	if sc.Role == ds.Moderator {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid constellation ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "неверное id созвездия"})
 			return
 		}
 		constellation, err := h.Repo.GetConstellationByIdAdmin(id)
@@ -280,7 +280,7 @@ func (h *Handler) DoConstelltionCompletedById(c *gin.Context) {
 			return
 		}
 		if constellation.Status != "inprogress" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot update status to 'completed' for a constellation that is not in 'inprogress' status"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ошибка обновления статуса"})
 			return
 		}
 		if err := h.Repo.UpdateStatusToCompleted(id, uint(sc.UserID)); err != nil {
@@ -292,7 +292,7 @@ func (h *Handler) DoConstelltionCompletedById(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Status updated to 'completed'", "constellation": constellation})
+		c.JSON(http.StatusOK, gin.H{"message": "статус обновлен", "constellation": constellation})
 	} else {
 		c.JSON(http.StatusForbidden, gin.H{"message": "no rules"})
 		return
@@ -304,28 +304,28 @@ func (h *Handler) RemovePlanetById(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "must be authorized",
+			"message": "необходимо авторизоваться",
 		})
 		return
 	}
 	sc := value.(ds.SessionContext)
-	if sc.Role == ds.Moderator  {
-		c.JSON(http.StatusForbidden, gin.H{"message": "no rules"})
+	if sc.Role == ds.Moderator {
+		c.JSON(http.StatusForbidden, gin.H{"message": "недостаточно прав"})
 		return
 	} else {
 		planetId, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid planet ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "неверное id планеты"})
 			return
 		}
 		constellation, err := h.Repo.GetCreatedConstellationByUser(sc.UserID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "no created constellatin"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "нету созданных созвездий"})
 			return
 		}
 		curConstellation, err := h.Repo.GetConstellationByIdAdmin(int(constellation.Id))
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "no created constellation"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "нету созданных созвездий"})
 			return
 		}
 		isPlanetInConst := false
@@ -336,13 +336,13 @@ func (h *Handler) RemovePlanetById(c *gin.Context) {
 			}
 		}
 		if !isPlanetInConst {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "There is no planet with such id in the created constellation"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "планеты с заданным id не существует"})
 			return
 		}
 		if err := h.Repo.DeletePlanetFromConstellation(uint(planetId), constellation.Id); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Planet deleted successfully"})
+		c.JSON(http.StatusOK, gin.H{"message": "планета удалена"})
 	}
 }

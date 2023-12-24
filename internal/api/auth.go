@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"crypto/rand"
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"golang.org/x/crypto/argon2"
 	"net/http"
 	"net/mail"
 	"space/internal/app/ds"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"golang.org/x/crypto/argon2"
 )
 
 type UserSingleton struct {
@@ -51,7 +52,7 @@ func (h *Handler) Login(ctx *gin.Context) {
 	if auth == true {
 		ctx.JSON(ds.GetHttpStatusCode(err), gin.H{
 			"status":  "fail",
-			"message": "you must be unauthorised\"",
+			"message": "Вы должны быть авторизованы\"",
 		})
 		return
 	}
@@ -66,7 +67,7 @@ func (h *Handler) Login(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&c); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "invalid request body",
+			"message": "Неверное тело запроса",
 		})
 		return
 	}
@@ -92,7 +93,7 @@ func (h *Handler) Login(ctx *gin.Context) {
 	if !checkPasswords(expectedUser.Password, c.Password) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "username or password is invalid",
+			"message": "Логин или пароль неверны",
 		})
 		return
 	}
@@ -142,7 +143,7 @@ func (h *Handler) Logout(ctx *gin.Context) {
 	if auth != true {
 		ctx.JSON(ds.GetHttpStatusCode(err), gin.H{
 			"status":  "fail",
-			"message": "you must be unauthorised",
+			"message": "Вы должны быть авторихованы",
 		})
 		return
 	}
@@ -188,7 +189,7 @@ func (h *Handler) Register(ctx *gin.Context) {
 	if auth == true {
 		ctx.JSON(ds.GetHttpStatusCode(err), gin.H{
 			"status":  "fail",
-			"message": "you must be unauthorised",
+			"message": "Вы должны быть неавторизованы",
 		})
 		return
 	}
@@ -197,7 +198,7 @@ func (h *Handler) Register(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "invalid request body",
+			"message": "Неверное тело запроса",
 		})
 		return
 	}

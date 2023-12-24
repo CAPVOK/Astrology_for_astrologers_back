@@ -6,15 +6,15 @@ import (
 )
 
 var (
-	ErrInternalServerError = errors.New("internal Server Error")
-	ErrNotFound            = errors.New("requested Item is not found")
-	ErrBadRequest          = errors.New("request is not valid")
-	ErrUnauthorized        = errors.New("need to authorize")
-	ErrWrongCredentials    = errors.New("username or password is invalid")
-	ErrInvalidToken        = errors.New("session token is invalid")
-	ErrAlreadyExists       = errors.New("resource already exists")
-	ErrOutOfRange          = errors.New("id is out of range")
-	ErrWrongUser           = errors.New("you can`t modify this data")
+	ErrInternalServerError = errors.New("Внутренняя ошибка сервера")
+	ErrNotFound            = errors.New("Не найдено")
+	ErrBadRequest          = errors.New("Ошибка при отправке запроса")
+	ErrUnauthorized        = errors.New("Неавторизован")
+	ErrWrongCredentials    = errors.New("Имя пользователя или пароль неверны")
+	ErrInvalidToken        = errors.New("Неверные токены сессии")
+	ErrAlreadyExists       = errors.New("Уже существует")
+	ErrOutOfRange          = errors.New("Id неверен")
+	ErrWrongUser           = errors.New("У вас недостаточно прав")
 )
 
 func GetHttpStatusCode(err error) int {

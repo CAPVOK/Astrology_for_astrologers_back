@@ -11,26 +11,26 @@ import (
 func (h *Handler) AddImage(c *gin.Context) {
 	planetId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный id"})
 		return
 	}
 	// Чтение изображения из запроса
 	image, err := c.FormFile("image")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка чтения фотографии"})
 		return
 	}
 	// Чтение содержимого изображения в байтах
 	file, err := image.Open()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Open Error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения фотографии"})
 		return
 	}
 	defer file.Close()
 
 	imageBytes, err := io.ReadAll(file)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Read Error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения фотографии"})
 		return
 	}
 	// Получение Content-Type из заголовков запроса
@@ -41,5 +41,5 @@ func (h *Handler) AddImage(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Image uploaded and linked successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Картинка добавлена успешно"})
 }
