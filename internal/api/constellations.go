@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 	"space/internal/app/ds"
 	"strconv"
@@ -291,6 +292,8 @@ func (h *Handler) UpdateConstellationByAdmin(c *gin.Context) {
 				c.JSON(http.StatusInternalServerError, err.Error())
 				return
 			}
+		} else {
+			c.JSON(http.StatusInternalServerError, errors.New("Невозможно сменить статус"))
 		}
 
 	} else {
