@@ -5,8 +5,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"space/internal/app/ds"
-	"space/internal/app/dsn"
+	"space/internal/dsn"
+	"space/internal/model"
 )
 
 func main() {
@@ -16,8 +16,8 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	// Migrate the schema
-	err = db.AutoMigrate(&ds.Planet{}, &ds.Constellation{}, &ds.ConstellationsPlanets{})
+	// Явно мигрировать только нужные таблицы
+	err = db.AutoMigrate(&model.User{})
 	if err != nil {
 		panic("cant migrate db")
 	}

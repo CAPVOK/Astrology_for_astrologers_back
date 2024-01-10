@@ -1,45 +1,60 @@
 package app
 
 import (
+	"fmt"
 	"log"
-	"space/internal/api"
 
-	"github.com/gin-contrib/cors"
+	"space/docs"
+	"space/internal/pkg/middleware"
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
-func (a *Application) StartServer() {
-	log.Println("Server start up")
-
-	handler := api.NewHandler(a.repo)
+// Run запускает приложение.
+func (app *Application) Run() {
 	r := gin.Default()
-	r.Use(cors.Default())
-
-	PlanetGroup := r.Group("/planet")
+	// Это нужно для автоматического создания папки "docs" в вашем проекте
+	docs.SwaggerInfo.Title = "BagTracker RestAPI"
+	docs.SwaggerInfo.Description = "API server for BagTracker application"
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Host = "localhost:8081"
+	docs.SwaggerInfo.BasePath = "/"
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// Группа запросов для багажа
+	BaggageGroup := r.Group("/baggage")
 	{
-		PlanetGroup.GET("/", handler.GetPlanets)             // список всех планет
-		PlanetGroup.GET("/:id", handler.GetPlanetById)       // одна планета
-		PlanetGroup.DELETE("/:id", handler.DeletePlanetById) // удалить планету по ид
-		PlanetGroup.PUT("/:id", handler.ChangePlanetById)    // изменить планету по ид
-		PlanetGroup.POST("/", handler.CreatePlanet)          // создать планету
-		PlanetGroup.POST("/:id", handler.AddPlanetById)      // добавить планету в созвездие
-		PlanetGroup.POST("/image/:id", handler.AddImage)     // добавить картинку для планеты
+		BaggageGroup.GET("/", middleware.Guest(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.GetBaggages)
+		BaggageGroup.GET("/:baggage_id", middleware.Guest(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.GetBaggageByID)
+		BaggageGroup.DELETE("/:baggage_id/delete", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.DeleteBaggage)
+		BaggageGroup.POST("/create", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.CreateBaggage)
+		BaggageGroup.PUT("/:baggage_id/update", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.UpdateBaggage)
+		BaggageGroup.POST("/:baggage_id/delivery", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.AddBaggageToDelivery)
+		BaggageGroup.DELETE("/:baggage_id/delivery/delete", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.RemoveBaggageFromDelivery)
+		BaggageGroup.POST("/:baggage_id/image", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.AddBaggageImage)
 	}
 
-	StellaGroup := r.Group("/constellation")
+	// Группа запросов для доставки
+	DeliveryGroup := r.Group("/delivery").Use(middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository))
 	{
-		StellaGroup.GET("/", handler.GetConstellations)             // все созвездия
-		StellaGroup.GET("/:id", handler.GetConstellationById)       // одно созвездие с планетами
-		StellaGroup.PUT("/:id", handler.ChangeConstellationById)    // изменить поля созвездия
-		StellaGroup.DELETE("/:id", handler.DeleteConstellationById) // удалить созвездие
-		StellaGroup.PUT("/inprogress", handler.DoConstellationInProgress)
-		StellaGroup.PUT("/cancel/:id", handler.DoConstelltionCanceledById)
-		StellaGroup.PUT("/complete/:id", handler.DoConstelltionCompletedById)
-		StellaGroup.DELETE("/remove/:id", handler.RemovePlanetById) // удалить планету из созвездия по ид планеты
+		DeliveryGroup.GET("/", app.Handler.GetDeliveries)
+		DeliveryGroup.GET("/:id", app.Handler.GetDeliveryByID)
+		DeliveryGroup.DELETE("/:id/delete", app.Handler.DeleteDelivery)
+		DeliveryGroup.PUT("/:id/update", app.Handler.UpdateDeliveryFlightNumber)
+		DeliveryGroup.PUT("/:id/status/user", app.Handler.UpdateDeliveryStatusUser)           // Новый маршрут для обновления статуса доставки пользователем
+		DeliveryGroup.PUT("/:id/status/moderator", app.Handler.UpdateDeliveryStatusModerator) // Новый маршрут для обновления статуса доставки модератором
 	}
 
-	r.Run()
-	// go run cmd/space/main.go
-
+	UserGroup := r.Group("/user")
+	{
+		UserGroup.GET("/", app.Handler.GetUserByID)
+		UserGroup.POST("/register", app.Handler.Register)
+		UserGroup.POST("/login", app.Handler.Login)
+		UserGroup.POST("/logout", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.Logout)
+		UserGroup.POST("/refreshtoken", app.Handler.RefreshToken)
+	}
+	addr := fmt.Sprintf("%s:%d", app.Config.ServiceHost, app.Config.ServicePort)
+	r.Run(addr)
 	log.Println("Server down")
 }
