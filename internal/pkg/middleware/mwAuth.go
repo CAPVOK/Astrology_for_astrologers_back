@@ -4,9 +4,10 @@ import (
 	"log"
 	"net/http"
 
+	"space/internal/http/repository"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
-	"github.com/markgregr/RIP/internal/http/repository"
 )
 
 func Authenticate(redisClient *redis.Client, jwtSecretKey []byte, r *repository.Repository) gin.HandlerFunc {
@@ -44,13 +45,13 @@ func Guest(redisClient *redis.Client, jwtSecretKey []byte, r *repository.Reposit
 			ctx.Set("userID", uint(0))
 			return
 		}
-		
+
 		userID, err := ParseAndValidateToken(accessTokenStr, jwtSecretKey)
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			ctx.Set("userID", uint(0))
 			ctx.Abort()
-			return 
+			return
 		}
 
 		if err := r.CheckTokenInRedis(userID, accessTokenStr); err != nil {
@@ -65,6 +66,3 @@ func Guest(redisClient *redis.Client, jwtSecretKey []byte, r *repository.Reposit
 		ctx.Next()
 	}
 }
-
-
-

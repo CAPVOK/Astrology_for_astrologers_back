@@ -1,12 +1,12 @@
 package model
 
 const (
-	BAGGAGE_STATUS_ACTIVE  = "активен"
-	BAGGAGE_STATUS_DELETED = "удален"
+	PLANET_STATUS_ACTIVE  = "активна"
+	PLANET_STATUS_DELETED = "удалена"
 
-	DELIVERY_STATUS_DRAFT     = "черновик"
-	DELIVERY_STATUS_WORK      = "в работе"
-	DELIVERY_STATUS_COMPLETED = "завершен"
-	DELIVERY_STATUS_REJECTED  = "отклонен"
-	DELIVERY_STATUS_DELETED   = "удален"
+	CONSTELLATION_STATUS_DRAFT     = "created"
+	CONSTELLATION_STATUS_WORK      = "inprogress"
+	CONSTELLATION_STATUS_COMPLETED = "completed"
+	CONSTELLATION_STATUS_REJECTED  = "deleted"
+	CONSTELLATION_STATUS_DELETED   = "canceled"
 )

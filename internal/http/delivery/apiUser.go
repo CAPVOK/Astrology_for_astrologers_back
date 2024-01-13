@@ -3,8 +3,9 @@ package delivery
 import (
 	"net/http"
 
+	"space/internal/model"
+
 	"github.com/gin-gonic/gin"
-	"github.com/markgregr/RIP/internal/model"
 )
 
 // @BasePath /user/register
@@ -22,13 +23,12 @@ func (h *Handler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	loginResponse, err := h.UseCase.RegisterUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"access_token": loginResponse.AccessToken, "full_name":loginResponse.FullName})
+	c.JSON(http.StatusOK, gin.H{"access_token": loginResponse.AccessToken, "full_name": loginResponse.FullName})
 }
 
 // @BasePath /user/login
@@ -48,13 +48,12 @@ func (h *Handler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	loginResponse, err := h.UseCase.LoginUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"access_token": loginResponse.AccessToken, "full_name":loginResponse.FullName})
+	c.JSON(http.StatusOK, gin.H{"access_token": loginResponse.AccessToken, "full_name": loginResponse.FullName})
 
 }
 
@@ -72,19 +71,16 @@ func (h *Handler) GetUserByID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
 		return
 	}
-
 	userID, ok := cUserID.(uint)
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при преобразовании идентификатора пользователя"})
 		return
 	}
-
 	user, err := h.UseCase.GetUserByID(uint(userID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
@@ -104,7 +100,7 @@ func (h *Handler) Logout(c *gin.Context) {
 		return
 	}
 	userID := cUserID.(uint)
-	
+
 	err := h.UseCase.LogoutUser(uint(userID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

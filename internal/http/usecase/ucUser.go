@@ -3,8 +3,8 @@ package usecase
 import (
 	"errors"
 
-	"github.com/markgregr/RIP/internal/model"
-	"github.com/markgregr/RIP/internal/pkg/middleware"
+	"space/internal/model"
+	"space/internal/pkg/middleware"
 )
 
 type UserUseCase interface {
@@ -15,16 +15,16 @@ type UserUseCase interface {
 
 func (uc *UseCase) RegisterUser(requestUser model.UserRegisterRequest) (model.UserLoginResponse, error) {
 	if requestUser.FullName == "" {
-		return model.UserLoginResponse{}, errors.New("ФИО должно быть заполнен")
+		return model.UserLoginResponse{}, errors.New("Имя должно быть заполнен")
 	}
 	if requestUser.Email == "" {
-		return model.UserLoginResponse{}, errors.New("почта должна быть заполнена")
+		return model.UserLoginResponse{}, errors.New("Почта должна быть заполнена")
 	}
 	if requestUser.Password == "" {
-		return model.UserLoginResponse{}, errors.New("пароль должен быть заполнен")
+		return model.UserLoginResponse{}, errors.New("Пароль должен быть заполнен")
 	}
-	if len(requestUser.Password) < 8 || len(requestUser.Password) > 20 {
-		return model.UserLoginResponse{}, errors.New("пароль должен содержать от 8 до 20 символов")
+	if len(requestUser.Password) < 8 || len(requestUser.Password) > 50 {
+		return model.UserLoginResponse{}, errors.New("Пароль должен содержать от 8 до 50 символов")
 	}
 
 	candidate, err := uc.Repository.GetByEmail(requestUser.Email)
@@ -33,7 +33,7 @@ func (uc *UseCase) RegisterUser(requestUser model.UserRegisterRequest) (model.Us
 	}
 
 	if candidate.Email == requestUser.Email {
-		return model.UserLoginResponse{}, errors.New("такой пользователь уже существует")
+		return model.UserLoginResponse{}, errors.New("Такой пользователь уже существует")
 	}
 
 	requestUser.Password, err = middleware.HashPassword(requestUser.Password)
@@ -42,10 +42,10 @@ func (uc *UseCase) RegisterUser(requestUser model.UserRegisterRequest) (model.Us
 	}
 
 	user := model.User{
-		FullName:    requestUser.FullName,
-		Email:       requestUser.Email,
-		Password:    requestUser.Password,
-		Role: 		 "пользователь",
+		FullName: requestUser.FullName,
+		Email:    requestUser.Email,
+		Password: requestUser.Password,
+		Role:     "пользователь",
 	}
 
 	err = uc.Repository.CreateUser(user)
@@ -68,19 +68,19 @@ func (uc *UseCase) RegisterUser(requestUser model.UserRegisterRequest) (model.Us
 	}
 	response := model.UserLoginResponse{
 		AccessToken: token.AccessToken,
-		FullName: user.FullName,
-		Role: user.Role,
+		FullName:    user.FullName,
+		Role:        user.Role,
 	}
 	return response, nil
 }
 
 func (uc *UseCase) LoginUser(requestUser model.UserLoginRequest) (model.UserLoginResponse, error) {
 	if requestUser.Email == "" {
-		return model.UserLoginResponse{}, errors.New("заполните почту")
+		return model.UserLoginResponse{}, errors.New("Заполните почту")
 	}
 
 	if requestUser.Password == "" {
-		return model.UserLoginResponse{}, errors.New("заполните пароль")
+		return model.UserLoginResponse{}, errors.New("Заполните пароль")
 	}
 
 	candidate, err := uc.Repository.GetByEmail(requestUser.Email)
@@ -103,8 +103,8 @@ func (uc *UseCase) LoginUser(requestUser model.UserLoginRequest) (model.UserLogi
 	}
 	response := model.UserLoginResponse{
 		AccessToken: token.AccessToken,
-		FullName: candidate.FullName,
-		Role: candidate.Role,
+		FullName:    candidate.FullName,
+		Role:        candidate.Role,
 	}
 	return response, nil
 }
@@ -131,7 +131,7 @@ func (uc *UseCase) GetUsers() ([]model.User, error) {
 	return users, nil
 }
 
-func (uc *UseCase) LogoutUser(userID uint) error{
+func (uc *UseCase) LogoutUser(userID uint) error {
 	err := uc.Repository.DeleteJWTToken(userID)
 	if err != nil {
 		return err

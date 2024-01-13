@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 
-	"github.com/markgregr/RIP/internal/model"
+	"space/internal/model"
 )
 
 type UserRepository interface {
@@ -15,11 +15,11 @@ func (r *Repository) GetUsers() ([]model.User, error) {
 	var users []model.User
 
 	err := r.db.Table("users").
-	Scan(&users).Error; 
+		Scan(&users).Error
 	if err != nil {
-        return nil, errors.New("ошибка нахождения списка пользователей")
-    }
-	
+		return nil, errors.New("ошибка нахождения списка пользователей")
+	}
+
 	return users, nil
 }
 
@@ -63,5 +63,3 @@ func (r *Repository) GetUserRoleByID(userID uint) (model.Role, error) {
 
 	return role, nil
 }
-
-

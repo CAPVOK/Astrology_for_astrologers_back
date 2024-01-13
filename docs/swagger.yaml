@@ -1,18 +1,18 @@
 definitions:
-  model.Baggage:
+  model.Planet:
     properties:
       airline:
         example: AirlineX
         type: string
-      baggage_code:
+      planet_code:
         example: ABC123
         type: string
-      baggage_id:
+      planet_id:
         type: integer
-      baggage_status:
+      planet_status:
         example: checked
         type: string
-      baggage_type:
+      planet_type:
         example: suitcase
         type: string
       owner_name:
@@ -22,7 +22,7 @@ definitions:
         example: "123456789"
         type: string
       photo:
-        example: http://example.com/baggage.jpg
+        example: http://example.com/planet.jpg
         type: string
       size:
         example: large
@@ -31,15 +31,15 @@ definitions:
         example: 23.5
         type: number
     type: object
-  model.BaggageRequest:
+  model.PlanetRequest:
     properties:
       airline:
         example: AirlineX
         type: string
-      baggage_code:
+      planet_code:
         example: ABC123
         type: string
-      baggage_type:
+      planet_type:
         example: suitcase
         type: string
       owner_name:
@@ -55,29 +55,29 @@ definitions:
         example: 23.5
         type: number
     type: object
-  model.BaggagesGetResponse:
+  model.PlanetsGetResponse:
     properties:
-      baggages:
+      planets:
         items:
-          $ref: '#/definitions/model.Baggage'
+          $ref: '#/definitions/model.Planet'
         type: array
-      delivery_id:
+      constellation_id:
         example: 1
         type: integer
     type: object
-  model.DeliveryGetResponse:
+  model.ConstellationGetResponse:
     properties:
-      baggages:
+      planets:
         items:
-          $ref: '#/definitions/model.Baggage'
+          $ref: '#/definitions/model.Planet'
         type: array
-      completion_date:
+      confirmation_date:
         type: string
       creation_date:
         type: string
-      delivery_id:
+      constellation_id:
         type: integer
-      delivery_status:
+      constellation_status:
         type: string
       flight_number:
         type: string
@@ -86,15 +86,15 @@ definitions:
       full_name:
         type: string
     type: object
-  model.DeliveryRequest:
+  model.ConstellationRequest:
     properties:
-      completion_date:
+      confirmation_date:
         type: string
       creation_date:
         type: string
-      delivery_id:
+      constellation_id:
         type: integer
-      delivery_status:
+      constellation_status:
         type: string
       flight_number:
         type: string
@@ -103,14 +103,14 @@ definitions:
       full_name:
         type: string
     type: object
-  model.DeliveryUpdateFlightNumberRequest:
+  model.ConstellationUpdateFlightNumberRequest:
     properties:
       flight_number:
         type: string
     type: object
-  model.DeliveryUpdateStatusRequest:
+  model.ConstellationUpdateStatusRequest:
     properties:
-      delivery_status:
+      constellation_status:
         type: string
     type: object
   model.Role:
@@ -153,11 +153,11 @@ definitions:
 info:
   contact: {}
 paths:
-  /baggage:
+  /planet:
     get:
-      description: Возращает список всех активных багажей
+      description: Возращает список всех активных планетаей
       parameters:
-      - description: Код багажа
+      - description: Код планеты
         format: email
         in: query
         name: searchCode
@@ -166,53 +166,53 @@ paths:
       - application/json
       responses:
         "200":
-          description: Список багажей
+          description: Список планетаей
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
+            $ref: '#/definitions/model.PlanetsGetResponse'
         "500":
           description: Ошибка сервера
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
-      summary: Получение списка багажа
+            $ref: '#/definitions/model.PlanetsGetResponse'
+      summary: Получение списка планеты
       tags:
-      - Багаж
-  /baggage/{baggage_id}:
+      - Планета
+  /planet/{planet_id}:
     get:
-      description: Возвращает информацию о багаже по его ID
+      description: Возвращает информацию о планетае по его ID
       parameters:
-      - description: ID багажа
+      - description: ID планеты
         in: path
-        name: baggage_id
+        name: planet_id
         required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Информация о багаже
+          description: Информация о планетае
           schema:
-            $ref: '#/definitions/model.Baggage'
+            $ref: '#/definitions/model.Planet'
         "400":
           description: Некорректный запрос
           schema:
-            $ref: '#/definitions/model.Baggage'
+            $ref: '#/definitions/model.Planet'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.Baggage'
-      summary: Получение багажа по ID
+            $ref: '#/definitions/model.Planet'
+      summary: Получение планеты по ID
       tags:
-      - Багаж
-  /baggage/{baggage_id}/delete:
+      - Планета
+  /planet/{planet_id}/delete:
     delete:
-      description: Удаляет багаж по его ID
+      description: Удаляет планета по его ID
       parameters:
-      - description: ID багажа
+      - description: ID планеты
         in: path
-        name: baggage_id
+        name: planet_id
         required: true
         type: integer
-      - description: Код багажа
+      - description: Код планеты
         format: email
         in: query
         name: searchCode
@@ -221,30 +221,30 @@ paths:
       - application/json
       responses:
         "200":
-          description: Список багажей
+          description: Список планетаей
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
+            $ref: '#/definitions/model.PlanetsGetResponse'
         "400":
           description: Некорректный запрос
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
+            $ref: '#/definitions/model.PlanetsGetResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
-      summary: Удаление багажа
+            $ref: '#/definitions/model.PlanetsGetResponse'
+      summary: Удаление планеты
       tags:
-      - Багаж
-  /baggage/{baggage_id}/delivery:
+      - Планета
+  /planet/{planet_id}/constellation:
     post:
-      description: Добавляет багаж к доставке по его ID
+      description: Добавляет планета к доставке по его ID
       parameters:
-      - description: ID багажа
+      - description: ID планеты
         in: path
-        name: baggage_id
+        name: planet_id
         required: true
         type: integer
-      - description: Код багажа
+      - description: Код планеты
         format: email
         in: query
         name: searchCode
@@ -253,32 +253,32 @@ paths:
       - application/json
       responses:
         "200":
-          description: Список багажей
+          description: Список планетаей
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
+            $ref: '#/definitions/model.PlanetsGetResponse'
         "400":
           description: Некорректный запрос
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
+            $ref: '#/definitions/model.PlanetsGetResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
-      summary: Добавление багажа к доставке
+            $ref: '#/definitions/model.PlanetsGetResponse'
+      summary: Добавление планеты к доставке
       tags:
-      - Багаж
-  /baggage/{baggage_id}/image:
+      - Планета
+  /planet/{planet_id}/image:
     post:
       consumes:
       - multipart/form-data
-      description: Добавляет изображение к багажу по его ID
+      description: Добавляет изображение к планетау по его ID
       parameters:
-      - description: ID багажа
+      - description: ID планеты
         in: path
-        name: baggage_id
+        name: planet_id
         required: true
         type: integer
-      - description: Изображение багажа
+      - description: Изображение планеты
         in: formData
         name: image
         required: true
@@ -289,92 +289,92 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Baggage'
+            $ref: '#/definitions/model.Planet'
         "400":
           description: Некорректный запрос
           schema:
-            $ref: '#/definitions/model.Baggage'
+            $ref: '#/definitions/model.Planet'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.Baggage'
-      summary: Добавление изображения к багажу
+            $ref: '#/definitions/model.Planet'
+      summary: Добавление изображения к планетау
       tags:
-      - Багаж
-  /baggage/{baggage_id}/update:
+      - Планета
+  /planet/{planet_id}/update:
     put:
       consumes:
       - application/json
-      description: Обновляет информацию о багаже по его ID
+      description: Обновляет информацию о планетае по его ID
       parameters:
-      - description: ID багажа
+      - description: ID планеты
         in: path
-        name: baggage_id
+        name: planet_id
         required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Информация о багаже
+          description: Информация о планетае
           schema:
-            $ref: '#/definitions/model.Baggage'
+            $ref: '#/definitions/model.Planet'
         "400":
           description: Некорректный запрос
           schema:
-            $ref: '#/definitions/model.Baggage'
+            $ref: '#/definitions/model.Planet'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.Baggage'
-      summary: Обновление информации о багаже
+            $ref: '#/definitions/model.Planet'
+      summary: Обновление информации о планетае
       tags:
-      - Багаж
-  /baggage/create:
+      - Планета
+  /planet/create:
     post:
       consumes:
       - application/json
-      description: Создает новый багаж с предоставленными данными
+      description: Создает новый планета с предоставленными данными
       parameters:
-      - description: Код багажа
+      - description: Код планеты
         format: email
         in: query
         name: searchCode
         type: string
       - description: Пользовательский объект в формате JSON
         in: body
-        name: baggage
+        name: planet
         required: true
         schema:
-          $ref: '#/definitions/model.BaggageRequest'
+          $ref: '#/definitions/model.PlanetRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Список багажей
+          description: Список планетаей
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
+            $ref: '#/definitions/model.PlanetsGetResponse'
         "400":
           description: Некорректный запрос
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
+            $ref: '#/definitions/model.PlanetsGetResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
-      summary: Создание нового багажа
+            $ref: '#/definitions/model.PlanetsGetResponse'
+      summary: Создание нового планеты
       tags:
-      - Багаж
-  /baggages/{baggage_id}/delivery:
+      - Планета
+  /planets/{planet_id}/constellation:
     post:
-      description: Удаляет багаж из доставки по его ID
+      description: Удаляет планета из созвездия по его ID
       parameters:
-      - description: ID багажа
+      - description: ID планеты
         in: path
-        name: baggage_id
+        name: planet_id
         required: true
         type: integer
-      - description: Код багажа
+      - description: Код планеты
         format: email
         in: query
         name: searchCode
@@ -383,21 +383,21 @@ paths:
       - application/json
       responses:
         "200":
-          description: Список багажей
+          description: Список планетаей
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
+            $ref: '#/definitions/model.PlanetsGetResponse'
         "400":
           description: Некорректный запрос
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
+            $ref: '#/definitions/model.PlanetsGetResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.BaggagesGetResponse'
-      summary: Удаление багажа из доставки
+            $ref: '#/definitions/model.PlanetsGetResponse'
+      summary: Удаление планеты из созвездия
       tags:
-      - Багаж
-  /delivery:
+      - Планета
+  /constellation:
     get:
       description: Возвращает список всех не удаленных доставок
       parameters:
@@ -416,10 +416,10 @@ paths:
         in: query
         name: endFormationDate
         type: string
-      - description: Статус доставки
+      - description: Статус созвездия
         format: email
         in: query
-        name: deliveryStatus
+        name: constellationStatus
         type: string
       produces:
       - application/json
@@ -427,19 +427,19 @@ paths:
         "200":
           description: Список доставок
           schema:
-            $ref: '#/definitions/model.DeliveryRequest'
+            $ref: '#/definitions/model.ConstellationRequest'
         "500":
           description: Ошибка сервера
           schema:
-            $ref: '#/definitions/model.DeliveryRequest'
+            $ref: '#/definitions/model.ConstellationRequest'
       summary: Получение списка доставок
       tags:
-      - Доставка
-  /delivery/{id}:
+      - Созвездие
+  /constellation/{id}:
     get:
       description: Возвращает информацию о доставке по её идентификатору
       parameters:
-      - description: Идентификатор доставки
+      - description: Идентификатор созвездия
         in: path
         name: id
         required: true
@@ -450,23 +450,23 @@ paths:
         "200":
           description: Информация о доставке
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
+            $ref: '#/definitions/model.ConstellationGetResponse'
         "400":
-          description: Недопустимый идентификатор доставки
+          description: Недопустимый идентификатор созвездия
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
+            $ref: '#/definitions/model.ConstellationGetResponse'
         "500":
           description: Ошибка сервера
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
-      summary: Получение доставки по идентификатору
+            $ref: '#/definitions/model.ConstellationGetResponse'
+      summary: Получение созвездия по идентификатору
       tags:
-      - Доставка
-  /delivery/{id}/delete:
+      - Созвездие
+  /constellation/{id}/delete:
     delete:
       description: Удаляет доставку по её идентификатору
       parameters:
-      - description: Идентификатор доставки
+      - description: Идентификатор созвездия
         in: path
         name: id
         required: true
@@ -486,68 +486,68 @@ paths:
         in: query
         name: endFormationDate
         type: string
-      - description: Статус доставки
+      - description: Статус созвездия
         format: email
         in: query
-        name: deliveryStatus
+        name: constellationStatus
         type: string
       produces:
       - application/json
       responses:
         "200":
-          description: Список багажей
+          description: Список планетаей
           schema:
-            $ref: '#/definitions/model.DeliveryRequest'
+            $ref: '#/definitions/model.ConstellationRequest'
         "400":
-          description: Недопустимый идентификатор доставки
+          description: Недопустимый идентификатор созвездия
           schema:
-            $ref: '#/definitions/model.DeliveryRequest'
+            $ref: '#/definitions/model.ConstellationRequest'
         "500":
           description: Ошибка сервера
           schema:
-            $ref: '#/definitions/model.DeliveryRequest'
-      summary: Удаление доставки
+            $ref: '#/definitions/model.ConstellationRequest'
+      summary: Удаление созвездия
       tags:
-      - Доставка
-  /delivery/{id}/status:
+      - Созвездие
+  /constellation/{id}/status:
     put:
-      description: Обновляет статус доставки для модератора по идентификатору доставки
+      description: Обновляет статус созвездия для модератора по идентификатору созвездия
       parameters:
-      - description: Идентификатор доставки
+      - description: Идентификатор созвездия
         in: path
         name: id
         required: true
         type: integer
-      - description: Новый статус доставки
+      - description: Новый статус созвездия
         in: body
-        name: deliveryStatus
+        name: constellationStatus
         required: true
         schema:
-          $ref: '#/definitions/model.DeliveryUpdateStatusRequest'
+          $ref: '#/definitions/model.ConstellationUpdateStatusRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Информация о доставке
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
+            $ref: '#/definitions/model.ConstellationGetResponse'
         "400":
-          description: Недопустимый идентификатор доставки или ошибка чтения JSON
+          description: Недопустимый идентификатор созвездия или ошибка чтения JSON
             объекта
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
+            $ref: '#/definitions/model.ConstellationGetResponse'
         "500":
           description: Ошибка сервера
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
-      summary: Обновление статуса доставки для модератора
+            $ref: '#/definitions/model.ConstellationGetResponse'
+      summary: Обновление статуса созвездия для модератора
       tags:
-      - Доставка
-  /delivery/{id}/update:
+      - Созвездие
+  /constellation/{id}/update:
     put:
-      description: Обновляет номер рейса для доставки по её идентификатору
+      description: Обновляет номер рейса для созвездия по её идентификатору
       parameters:
-      - description: Идентификатор доставки
+      - description: Идентификатор созвездия
         in: path
         name: id
         required: true
@@ -557,31 +557,31 @@ paths:
         name: flightNumber
         required: true
         schema:
-          $ref: '#/definitions/model.DeliveryUpdateFlightNumberRequest'
+          $ref: '#/definitions/model.ConstellationUpdateFlightNumberRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Информация о доставке
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
+            $ref: '#/definitions/model.ConstellationGetResponse'
         "400":
-          description: Недопустимый идентификатор доставки или ошибка чтения JSON
+          description: Недопустимый идентификатор созвездия или ошибка чтения JSON
             объекта
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
+            $ref: '#/definitions/model.ConstellationGetResponse'
         "500":
           description: Ошибка сервера
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
-      summary: Обновление номера рейса доставки
+            $ref: '#/definitions/model.ConstellationGetResponse'
+      summary: Обновление номера рейса созвездия
       tags:
-      - Доставка
-  /delivery/{id}/user:
+      - Созвездие
+  /constellation/{id}/user:
     put:
-      description: Обновляет статус доставки для пользователя по идентификатору доставки
+      description: Обновляет статус созвездия для пользователя по идентификатору созвездия
       parameters:
-      - description: Идентификатор доставки
+      - description: Идентификатор созвездия
         in: path
         name: id
         required: true
@@ -592,18 +592,18 @@ paths:
         "200":
           description: Информация о доставке
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
+            $ref: '#/definitions/model.ConstellationGetResponse'
         "400":
-          description: Недопустимый идентификатор доставки
+          description: Недопустимый идентификатор созвездия
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
+            $ref: '#/definitions/model.ConstellationGetResponse'
         "500":
           description: Ошибка сервера
           schema:
-            $ref: '#/definitions/model.DeliveryGetResponse'
-      summary: Обновление статуса доставки для пользователя
+            $ref: '#/definitions/model.ConstellationGetResponse'
+      summary: Обновление статуса созвездия для пользователя
       tags:
-      - Доставка
+      - Созвездие
   /user/:
     get:
       description: Получение данных пользователя по его идентификатору

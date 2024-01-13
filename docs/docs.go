@@ -15,44 +15,44 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/baggage": {
+        "/planet": {
             "get": {
-                "description": "Возращает список всех активных багажей",
+                "description": "Возращает список всех активных планетаей",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Багаж"
+                    "Планета"
                 ],
-                "summary": "Получение списка багажа",
+                "summary": "Получение списка планеты",
                 "parameters": [
                     {
                         "type": "string",
                         "format": "email",
-                        "description": "Код багажа",
+                        "description": "Код планеты",
                         "name": "searchCode",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список багажей",
+                        "description": "Список планетаей",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "500": {
                         "description": "Ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     }
                 }
             }
         },
-        "/baggage/create": {
+        "/planet/create": {
             "post": {
-                "description": "Создает новый багаж с предоставленными данными",
+                "description": "Создает новый планета с предоставленными данными",
                 "consumes": [
                     "application/json"
                 ],
@@ -60,189 +60,189 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Багаж"
+                    "Планета"
                 ],
-                "summary": "Создание нового багажа",
+                "summary": "Создание нового планеты",
                 "parameters": [
                     {
                         "type": "string",
                         "format": "email",
-                        "description": "Код багажа",
+                        "description": "Код планеты",
                         "name": "searchCode",
                         "in": "query"
                     },
                     {
                         "description": "Пользовательский объект в формате JSON",
-                        "name": "baggage",
+                        "name": "planet",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.BaggageRequest"
+                            "$ref": "#/definitions/model.PlanetRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список багажей",
+                        "description": "Список планетаей",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "400": {
                         "description": "Некорректный запрос",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     }
                 }
             }
         },
-        "/baggage/{baggage_id}": {
+        "/planet/{planet_id}": {
             "get": {
-                "description": "Возвращает информацию о багаже по его ID",
+                "description": "Возвращает информацию о планетае по его ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Багаж"
+                    "Планета"
                 ],
-                "summary": "Получение багажа по ID",
+                "summary": "Получение планеты по ID",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID багажа",
-                        "name": "baggage_id",
+                        "description": "ID планеты",
+                        "name": "planet_id",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Информация о багаже",
+                        "description": "Информация о планетае",
                         "schema": {
-                            "$ref": "#/definitions/model.Baggage"
+                            "$ref": "#/definitions/model.Planet"
                         }
                     },
                     "400": {
                         "description": "Некорректный запрос",
                         "schema": {
-                            "$ref": "#/definitions/model.Baggage"
+                            "$ref": "#/definitions/model.Planet"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.Baggage"
+                            "$ref": "#/definitions/model.Planet"
                         }
                     }
                 }
             }
         },
-        "/baggage/{baggage_id}/delete": {
+        "/planet/{planet_id}/delete": {
             "delete": {
-                "description": "Удаляет багаж по его ID",
+                "description": "Удаляет планета по его ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Багаж"
+                    "Планета"
                 ],
-                "summary": "Удаление багажа",
+                "summary": "Удаление планеты",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID багажа",
-                        "name": "baggage_id",
+                        "description": "ID планеты",
+                        "name": "planet_id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
                         "format": "email",
-                        "description": "Код багажа",
+                        "description": "Код планеты",
                         "name": "searchCode",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список багажей",
+                        "description": "Список планетаей",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "400": {
                         "description": "Некорректный запрос",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     }
                 }
             }
         },
-        "/baggage/{baggage_id}/delivery": {
+        "/planet/{planet_id}/constellation": {
             "post": {
-                "description": "Добавляет багаж к доставке по его ID",
+                "description": "Добавляет планета к доставке по его ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Багаж"
+                    "Планета"
                 ],
-                "summary": "Добавление багажа к доставке",
+                "summary": "Добавление планеты к доставке",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID багажа",
-                        "name": "baggage_id",
+                        "description": "ID планеты",
+                        "name": "planet_id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
                         "format": "email",
-                        "description": "Код багажа",
+                        "description": "Код планеты",
                         "name": "searchCode",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список багажей",
+                        "description": "Список планетаей",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "400": {
                         "description": "Некорректный запрос",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     }
                 }
             }
         },
-        "/baggage/{baggage_id}/image": {
+        "/planet/{planet_id}/image": {
             "post": {
-                "description": "Добавляет изображение к багажу по его ID",
+                "description": "Добавляет изображение к планетау по его ID",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -250,20 +250,20 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Багаж"
+                    "Планета"
                 ],
-                "summary": "Добавление изображения к багажу",
+                "summary": "Добавление изображения к планетау",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID багажа",
-                        "name": "baggage_id",
+                        "description": "ID планеты",
+                        "name": "planet_id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "file",
-                        "description": "Изображение багажа",
+                        "description": "Изображение планеты",
                         "name": "image",
                         "in": "formData",
                         "required": true
@@ -273,27 +273,27 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Baggage"
+                            "$ref": "#/definitions/model.Planet"
                         }
                     },
                     "400": {
                         "description": "Некорректный запрос",
                         "schema": {
-                            "$ref": "#/definitions/model.Baggage"
+                            "$ref": "#/definitions/model.Planet"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.Baggage"
+                            "$ref": "#/definitions/model.Planet"
                         }
                     }
                 }
             }
         },
-        "/baggage/{baggage_id}/update": {
+        "/planet/{planet_id}/update": {
             "put": {
-                "description": "Обновляет информацию о багаже по его ID",
+                "description": "Обновляет информацию о планетае по его ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -301,96 +301,96 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Багаж"
+                    "Планета"
                 ],
-                "summary": "Обновление информации о багаже",
+                "summary": "Обновление информации о планетае",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID багажа",
-                        "name": "baggage_id",
+                        "description": "ID планеты",
+                        "name": "planet_id",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Информация о багаже",
+                        "description": "Информация о планетае",
                         "schema": {
-                            "$ref": "#/definitions/model.Baggage"
+                            "$ref": "#/definitions/model.Planet"
                         }
                     },
                     "400": {
                         "description": "Некорректный запрос",
                         "schema": {
-                            "$ref": "#/definitions/model.Baggage"
+                            "$ref": "#/definitions/model.Planet"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.Baggage"
+                            "$ref": "#/definitions/model.Planet"
                         }
                     }
                 }
             }
         },
-        "/baggages/{baggage_id}/delivery": {
+        "/planets/{planet_id}/constellation": {
             "post": {
-                "description": "Удаляет багаж из доставки по его ID",
+                "description": "Удаляет планета из созвездия по его ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Багаж"
+                    "Планета"
                 ],
-                "summary": "Удаление багажа из доставки",
+                "summary": "Удаление планеты из созвездия",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID багажа",
-                        "name": "baggage_id",
+                        "description": "ID планеты",
+                        "name": "planet_id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
                         "format": "email",
-                        "description": "Код багажа",
+                        "description": "Код планеты",
                         "name": "searchCode",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список багажей",
+                        "description": "Список планетаей",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "400": {
                         "description": "Некорректный запрос",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.BaggagesGetResponse"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     }
                 }
             }
         },
-        "/delivery": {
+        "/constellation": {
             "get": {
                 "description": "Возвращает список всех не удаленных доставок",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Доставка"
+                    "Созвездие"
                 ],
                 "summary": "Получение списка доставок",
                 "parameters": [
@@ -418,8 +418,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "format": "email",
-                        "description": "Статус доставки",
-                        "name": "deliveryStatus",
+                        "description": "Статус созвездия",
+                        "name": "constellationStatus",
                         "in": "query"
                     }
                 ],
@@ -427,32 +427,32 @@ const docTemplate = `{
                     "200": {
                         "description": "Список доставок",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryRequest"
+                            "$ref": "#/definitions/model.ConstellationRequest"
                         }
                     },
                     "500": {
                         "description": "Ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryRequest"
+                            "$ref": "#/definitions/model.ConstellationRequest"
                         }
                     }
                 }
             }
         },
-        "/delivery/{id}": {
+        "/constellation/{id}": {
             "get": {
                 "description": "Возвращает информацию о доставке по её идентификатору",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Доставка"
+                    "Созвездие"
                 ],
-                "summary": "Получение доставки по идентификатору",
+                "summary": "Получение созвездия по идентификатору",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Идентификатор доставки",
+                        "description": "Идентификатор созвездия",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -462,38 +462,38 @@ const docTemplate = `{
                     "200": {
                         "description": "Информация о доставке",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     },
                     "400": {
-                        "description": "Недопустимый идентификатор доставки",
+                        "description": "Недопустимый идентификатор созвездия",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     },
                     "500": {
                         "description": "Ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     }
                 }
             }
         },
-        "/delivery/{id}/delete": {
+        "/constellation/{id}/delete": {
             "delete": {
                 "description": "Удаляет доставку по её идентификатору",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Доставка"
+                    "Созвездие"
                 ],
-                "summary": "Удаление доставки",
+                "summary": "Удаление созвездия",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Идентификатор доставки",
+                        "description": "Идентификатор созвездия",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -522,58 +522,58 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "format": "email",
-                        "description": "Статус доставки",
-                        "name": "deliveryStatus",
+                        "description": "Статус созвездия",
+                        "name": "constellationStatus",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список багажей",
+                        "description": "Список планетаей",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryRequest"
+                            "$ref": "#/definitions/model.ConstellationRequest"
                         }
                     },
                     "400": {
-                        "description": "Недопустимый идентификатор доставки",
+                        "description": "Недопустимый идентификатор созвездия",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryRequest"
+                            "$ref": "#/definitions/model.ConstellationRequest"
                         }
                     },
                     "500": {
                         "description": "Ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryRequest"
+                            "$ref": "#/definitions/model.ConstellationRequest"
                         }
                     }
                 }
             }
         },
-        "/delivery/{id}/status": {
+        "/constellation/{id}/status": {
             "put": {
-                "description": "Обновляет статус доставки для модератора по идентификатору доставки",
+                "description": "Обновляет статус созвездия для модератора по идентификатору созвездия",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Доставка"
+                    "Созвездие"
                 ],
-                "summary": "Обновление статуса доставки для модератора",
+                "summary": "Обновление статуса созвездия для модератора",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Идентификатор доставки",
+                        "description": "Идентификатор созвездия",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Новый статус доставки",
-                        "name": "deliveryStatus",
+                        "description": "Новый статус созвездия",
+                        "name": "constellationStatus",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryUpdateStatusRequest"
+                            "$ref": "#/definitions/model.ConstellationUpdateStatusRequest"
                         }
                     }
                 ],
@@ -581,38 +581,38 @@ const docTemplate = `{
                     "200": {
                         "description": "Информация о доставке",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     },
                     "400": {
-                        "description": "Недопустимый идентификатор доставки или ошибка чтения JSON объекта",
+                        "description": "Недопустимый идентификатор созвездия или ошибка чтения JSON объекта",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     },
                     "500": {
                         "description": "Ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     }
                 }
             }
         },
-        "/delivery/{id}/update": {
+        "/constellation/{id}/update": {
             "put": {
-                "description": "Обновляет номер рейса для доставки по её идентификатору",
+                "description": "Обновляет номер рейса для созвездия по её идентификатору",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Доставка"
+                    "Созвездие"
                 ],
-                "summary": "Обновление номера рейса доставки",
+                "summary": "Обновление номера рейса созвездия",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Идентификатор доставки",
+                        "description": "Идентификатор созвездия",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -623,7 +623,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryUpdateFlightNumberRequest"
+                            "$ref": "#/definitions/model.ConstellationUpdateFlightNumberRequest"
                         }
                     }
                 ],
@@ -631,38 +631,38 @@ const docTemplate = `{
                     "200": {
                         "description": "Информация о доставке",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     },
                     "400": {
-                        "description": "Недопустимый идентификатор доставки или ошибка чтения JSON объекта",
+                        "description": "Недопустимый идентификатор созвездия или ошибка чтения JSON объекта",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     },
                     "500": {
                         "description": "Ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     }
                 }
             }
         },
-        "/delivery/{id}/user": {
+        "/constellation/{id}/user": {
             "put": {
-                "description": "Обновляет статус доставки для пользователя по идентификатору доставки",
+                "description": "Обновляет статус созвездия для пользователя по идентификатору созвездия",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Доставка"
+                    "Созвездие"
                 ],
-                "summary": "Обновление статуса доставки для пользователя",
+                "summary": "Обновление статуса созвездия для пользователя",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Идентификатор доставки",
+                        "description": "Идентификатор созвездия",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -672,19 +672,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Информация о доставке",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     },
                     "400": {
-                        "description": "Недопустимый идентификатор доставки",
+                        "description": "Недопустимый идентификатор созвездия",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     },
                     "500": {
                         "description": "Ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.DeliveryGetResponse"
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
                         }
                     }
                 }
@@ -904,25 +904,25 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "model.Baggage": {
+        "model.Planet": {
             "type": "object",
             "properties": {
                 "airline": {
                     "type": "string",
                     "example": "AirlineX"
                 },
-                "baggage_code": {
+                "planet_code": {
                     "type": "string",
                     "example": "ABC123"
                 },
-                "baggage_id": {
+                "planet_id": {
                     "type": "integer"
                 },
-                "baggage_status": {
+                "planet_status": {
                     "type": "string",
                     "example": "checked"
                 },
-                "baggage_type": {
+                "planet_type": {
                     "type": "string",
                     "example": "suitcase"
                 },
@@ -936,7 +936,7 @@ const docTemplate = `{
                 },
                 "photo": {
                     "type": "string",
-                    "example": "http://example.com/baggage.jpg"
+                    "example": "http://example.com/planet.jpg"
                 },
                 "size": {
                     "type": "string",
@@ -948,18 +948,18 @@ const docTemplate = `{
                 }
             }
         },
-        "model.BaggageRequest": {
+        "model.PlanetRequest": {
             "type": "object",
             "properties": {
                 "airline": {
                     "type": "string",
                     "example": "AirlineX"
                 },
-                "baggage_code": {
+                "planet_code": {
                     "type": "string",
                     "example": "ABC123"
                 },
-                "baggage_type": {
+                "planet_type": {
                     "type": "string",
                     "example": "suitcase"
                 },
@@ -981,40 +981,40 @@ const docTemplate = `{
                 }
             }
         },
-        "model.BaggagesGetResponse": {
+        "model.PlanetsGetResponse": {
             "type": "object",
             "properties": {
-                "baggages": {
+                "planets": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Baggage"
+                        "$ref": "#/definitions/model.Planet"
                     }
                 },
-                "delivery_id": {
+                "constellation_id": {
                     "type": "integer",
                     "example": 1
                 }
             }
         },
-        "model.DeliveryGetResponse": {
+        "model.ConstellationGetResponse": {
             "type": "object",
             "properties": {
-                "baggages": {
+                "planets": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Baggage"
+                        "$ref": "#/definitions/model.Planet"
                     }
                 },
-                "completion_date": {
+                "confirmation_date": {
                     "type": "string"
                 },
                 "creation_date": {
                     "type": "string"
                 },
-                "delivery_id": {
+                "constellation_id": {
                     "type": "integer"
                 },
-                "delivery_status": {
+                "constellation_status": {
                     "type": "string"
                 },
                 "flight_number": {
@@ -1028,19 +1028,19 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DeliveryRequest": {
+        "model.ConstellationRequest": {
             "type": "object",
             "properties": {
-                "completion_date": {
+                "confirmation_date": {
                     "type": "string"
                 },
                 "creation_date": {
                     "type": "string"
                 },
-                "delivery_id": {
+                "constellation_id": {
                     "type": "integer"
                 },
-                "delivery_status": {
+                "constellation_status": {
                     "type": "string"
                 },
                 "flight_number": {
@@ -1054,7 +1054,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DeliveryUpdateFlightNumberRequest": {
+        "model.ConstellationUpdateFlightNumberRequest": {
             "type": "object",
             "properties": {
                 "flight_number": {
@@ -1062,10 +1062,10 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DeliveryUpdateStatusRequest": {
+        "model.ConstellationUpdateStatusRequest": {
             "type": "object",
             "properties": {
-                "delivery_status": {
+                "constellation_status": {
                     "type": "string"
                 }
             }

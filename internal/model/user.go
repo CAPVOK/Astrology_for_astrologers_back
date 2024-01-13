@@ -1,14 +1,14 @@
 package model
 
 type User struct {
-	UserID   uint   `gorm:"autoIncrement;primarykey" json:"user_id"`
+	UserID   uint   `gorm:"autoIncrement;primarykey" json:"id"`
 	FullName string `json:"full_name"`
 	Email    string `json:"email"`
 	Password string `json:"password`
 	Role     Role   `json:"role"`
 }
 type UserRegisterRequest struct {
-	FullName string `json:"full_name"`
+	FullName string `json:"fullName"`
 	Email    string `json:"email"`
 	Password string `json:"password`
 }
