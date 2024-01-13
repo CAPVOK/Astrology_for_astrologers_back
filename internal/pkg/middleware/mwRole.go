@@ -3,10 +3,9 @@ package middleware
 import (
 	"net/http"
 
-	"space/internal/http/repository"
-	"space/internal/model"
-
 	"github.com/gin-gonic/gin"
+	"github.com/markgregr/RIP/internal/http/repository"
+	"github.com/markgregr/RIP/internal/model"
 )
 
 func ModeratorOnly(r *repository.Repository, c *gin.Context) bool {
@@ -22,7 +21,7 @@ func ModeratorOnly(r *repository.Repository, c *gin.Context) bool {
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		c.Abort()
-	}
+	}	
 
 	if role == model.ModeratorRole {
 		return true

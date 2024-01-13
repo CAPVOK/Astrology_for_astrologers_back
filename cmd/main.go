@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"space/internal/app"
+	"github.com/markgregr/RIP/internal/app"
 )
 
 // @title BagTracker RestAPI
@@ -32,3 +32,4 @@ func main() {
 	application.Run()
 	log.Println("Application terminated!")
 }
+	

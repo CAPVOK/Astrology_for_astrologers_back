@@ -1,6 +1,6 @@
 package usecase
 
-import "space/internal/http/repository"
+import "github.com/markgregr/RIP/internal/http/repository"
 
 type UseCase struct {
 	Repository *repository.Repository

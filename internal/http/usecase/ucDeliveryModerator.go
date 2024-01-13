@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	"space/internal/model"
+	"github.com/markgregr/RIP/internal/model"
 )
 
 func (uc *UseCase) GetDeliveriesModerator(searchFlightNumber, startFormationDate, endFormationDate, deliveryStatus string, moderatorID uint) ([]model.DeliveryRequest, error) {
@@ -39,14 +39,14 @@ func (uc *UseCase) GetDeliveryByIDModerator(deliveryID, moderatorID uint) (model
 	return deliveries, nil
 }
 
-func (uc *UseCase) UpdateFlightNumberModerator(deliveryID, moderatorID uint, flightNumber model.DeliveryUpdateFlightNumberRequest) error {
+func (uc *UseCase) UpdateFlightNumberModerator(deliveryID, moderatorID uint, flightNumber model.DeliveryUpdateFlightNumberRequest) error{
 	if deliveryID <= 0 {
 		return errors.New("недопустимый ИД доставки")
 	}
 	if moderatorID <= 0 {
 		return errors.New("недопустимый ИД модератора")
 	}
-	if len(flightNumber.FlightNumber) != 6 {
+	if len(flightNumber.FlightNumber) !=6 {
 		return errors.New("недопустимый номер рейса")
 	}
 
@@ -58,7 +58,7 @@ func (uc *UseCase) UpdateFlightNumberModerator(deliveryID, moderatorID uint, fli
 	return nil
 }
 
-func (uc *UseCase) UpdateDeliveryStatusModerator(deliveryID, moderatorID uint, deliveryStatus model.DeliveryUpdateStatusRequest) error {
+func (uc *UseCase) UpdateDeliveryStatusModerator(deliveryID, moderatorID uint, deliveryStatus model.DeliveryUpdateStatusRequest) error{
 	if deliveryID <= 0 {
 		return errors.New("недопустимый ИД доставки")
 	}
@@ -76,3 +76,5 @@ func (uc *UseCase) UpdateDeliveryStatusModerator(deliveryID, moderatorID uint, d
 
 	return nil
 }
+
+

@@ -1,4 +1,4 @@
-module space
+module github.com/markgregr/RIP
 
 go 1.21.1
 

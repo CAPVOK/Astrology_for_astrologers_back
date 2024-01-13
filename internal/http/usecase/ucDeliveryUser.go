@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	"space/internal/model"
+	"github.com/markgregr/RIP/internal/model"
 )
 
 func (uc *UseCase) GetDeliveriesUser(searchFlightNumber, startFormationDate, endFormationDate, deliveryStatus string, userID uint) ([]model.DeliveryRequest, error) {
@@ -39,7 +39,7 @@ func (uc *UseCase) GetDeliveryByIDUser(deliveryID, userID uint) (model.DeliveryG
 	return deliveries, nil
 }
 
-func (uc *UseCase) DeleteDeliveryUser(deliveryID, userID uint) error {
+func (uc *UseCase) DeleteDeliveryUser(deliveryID, userID uint) error{
 	if deliveryID <= 0 {
 		return errors.New("недопустимый ИД доставки")
 	}
@@ -55,14 +55,15 @@ func (uc *UseCase) DeleteDeliveryUser(deliveryID, userID uint) error {
 	return nil
 }
 
-func (uc *UseCase) UpdateFlightNumberUser(deliveryID, userID uint, flightNumber model.DeliveryUpdateFlightNumberRequest) error {
+
+func (uc *UseCase) UpdateFlightNumberUser(deliveryID, userID uint, flightNumber model.DeliveryUpdateFlightNumberRequest) error{
 	if deliveryID <= 0 {
 		return errors.New("недопустимый ИД доставки")
 	}
 	if userID <= 0 {
 		return errors.New("недопустимый ИД пользователя")
 	}
-	if len(flightNumber.FlightNumber) != 6 {
+	if len(flightNumber.FlightNumber) !=6 {
 		return errors.New("недопустимый номер рейса")
 	}
 
@@ -74,7 +75,7 @@ func (uc *UseCase) UpdateFlightNumberUser(deliveryID, userID uint, flightNumber 
 	return nil
 }
 
-func (uc *UseCase) UpdateDeliveryStatusUser(deliveryID, userID uint) error {
+func (uc *UseCase) UpdateDeliveryStatusUser(deliveryID, userID uint) error{
 	if deliveryID <= 0 {
 		return errors.New("недопустимый ИД доставки")
 	}
@@ -89,3 +90,5 @@ func (uc *UseCase) UpdateDeliveryStatusUser(deliveryID, userID uint) error {
 
 	return nil
 }
+
+

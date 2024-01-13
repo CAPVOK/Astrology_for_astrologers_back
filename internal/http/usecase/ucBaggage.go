@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	"space/internal/model"
+	"github.com/markgregr/RIP/internal/model"
 )
 
 type BaggageUseCase interface {
@@ -68,13 +68,13 @@ func (uc *UseCase) CreateBaggage(userID uint, requestBaggage model.BaggageReques
 	}
 
 	baggage := model.Baggage{
-		BaggageCode:    requestBaggage.BaggageCode,
-		Weight:         requestBaggage.Weight,
-		Size:           requestBaggage.Size,
-		BaggageType:    requestBaggage.BaggageType,
-		OwnerName:      requestBaggage.OwnerName,
-		PasportDetails: requestBaggage.PasportDetails,
-		Airline:        requestBaggage.Airline,
+		BaggageCode: 	requestBaggage.BaggageCode,
+		Weight:			requestBaggage.Weight,
+		Size:			requestBaggage.Size,
+		BaggageType:	requestBaggage.BaggageType,
+		OwnerName:		requestBaggage.OwnerName,
+		PasportDetails:	requestBaggage.PasportDetails,
+		Airline:		requestBaggage.Airline,
 		BaggageStatus:  model.BAGGAGE_STATUS_ACTIVE,
 	}
 
@@ -103,7 +103,7 @@ func (uc *UseCase) DeleteBaggage(baggageID, userID uint) error {
 	if err != nil {
 		return err
 	}
-
+	
 	return nil
 }
 
@@ -116,13 +116,13 @@ func (uc *UseCase) UpdateBaggage(baggageID, userID uint, requestBaggage model.Ba
 	}
 
 	baggage := model.Baggage{
-		BaggageCode:    requestBaggage.BaggageCode,
-		Weight:         requestBaggage.Weight,
-		Size:           requestBaggage.Size,
-		BaggageType:    requestBaggage.BaggageType,
-		OwnerName:      requestBaggage.OwnerName,
-		PasportDetails: requestBaggage.PasportDetails,
-		Airline:        requestBaggage.Airline,
+		BaggageCode: 	requestBaggage.BaggageCode,
+		Weight:			requestBaggage.Weight,
+		Size:			requestBaggage.Size,
+		BaggageType:	requestBaggage.BaggageType,
+		OwnerName:		requestBaggage.OwnerName,
+		PasportDetails:	requestBaggage.PasportDetails,
+		Airline:		requestBaggage.Airline,
 	}
 
 	err := uc.Repository.UpdateBaggage(baggageID, userID, baggage)
@@ -194,3 +194,8 @@ func (uc *UseCase) AddBaggageImage(baggageID, userID uint, imageBytes []byte, Co
 
 	return nil
 }
+
+
+
+
+
