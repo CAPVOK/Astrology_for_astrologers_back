@@ -136,19 +136,16 @@ func (h *Handler) DeletePlanet(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД планеты"})
 		return
 	}
-
 	err = h.UseCase.DeletePlanet(uint(planetID), userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	planets, err := h.UseCase.GetPlanets(searchCode, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"planets": planets.Planets, "constellationID": planets.ConstellationID})
 }
 
@@ -222,19 +219,16 @@ func (h *Handler) AddPlanetToConstellation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД планеты"})
 		return
 	}
-
 	err = h.UseCase.AddPlanetToConstellation(uint(planetID), uint(userID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	planets, err := h.UseCase.GetPlanets(searchCode, uint(userID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"planets": planets.Planets, "constellationID": planets.ConstellationID})
 }
 
@@ -255,28 +249,28 @@ func (h *Handler) RemovePlanetFromConstellation(c *gin.Context) {
 		return
 	}
 	userID := ctxUserID.(uint)
-
 	searchCode := c.DefaultQuery("searchCode", "")
-
 	planetID, err := strconv.Atoi(c.Param("planet_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД планеты"})
 		return
 	}
-
 	err = h.UseCase.RemovePlanetFromConstellation(uint(planetID), uint(userID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	planets, err := h.UseCase.GetPlanets(searchCode, uint(userID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"planets": planets.Planets, "constellationID": planets.ConstellationID})
+	constellation, err := h.UseCase.GetConstellationByIDUser(uint(planets.ConstellationID), uint(userID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"constellation": constellation})
 }
 
 // @Summary Добавление изображения к багажу

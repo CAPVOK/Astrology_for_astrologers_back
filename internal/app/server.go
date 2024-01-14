@@ -22,7 +22,7 @@ func (app *Application) Run() {
 	docs.SwaggerInfo.Host = "localhost:8081"
 	docs.SwaggerInfo.BasePath = "/"
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	// Группа запросов для планеты
+	// Группа запросов для планет
 	PlanetGroup := r.Group("/planet")
 	{
 		PlanetGroup.GET("/", middleware.Guest(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.GetPlanets)
@@ -35,20 +35,20 @@ func (app *Application) Run() {
 		PlanetGroup.POST("/:planet_id/image", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.AddPlanetImage)
 	}
 
-	// Группа запросов для созвездия
+	// Группа запросов для созвездий
 	ConstellationGroup := r.Group("/constellation").Use(middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository))
 	{
 		ConstellationGroup.GET("/", app.Handler.GetConstellations)
 		ConstellationGroup.GET("/:id", app.Handler.GetConstellationByID)
 		ConstellationGroup.DELETE("/:id/delete", app.Handler.DeleteConstellation)
-		ConstellationGroup.PUT("/:id/update", app.Handler.UpdateConstellationFlightNumber)
-		ConstellationGroup.PUT("/:id/status/user", app.Handler.UpdateConstellationStatusUser)           // Новый маршрут для обновления статуса созвездия пользователем
-		ConstellationGroup.PUT("/:id/status/moderator", app.Handler.UpdateConstellationStatusModerator) // Новый маршрут для обновления статуса созвездия модератором
+		ConstellationGroup.PUT("/:id/update", app.Handler.UpdateConstellation)
+		ConstellationGroup.PUT("/:id/status", app.Handler.UpdateConstellationStatus)
+		/* ConstellationGroup.PUT("/:id/status/user", app.Handler.UpdateConstellationStatusUser) */
+		/* ConstellationGroup.PUT("/:id/status/moderator", app.Handler.UpdateConstellationStatusModerator) */
 	}
 
 	UserGroup := r.Group("/user")
 	{
-		UserGroup.GET("/", app.Handler.GetUserByID)
 		UserGroup.POST("/register", app.Handler.Register)
 		UserGroup.POST("/login", app.Handler.Login)
 		UserGroup.POST("/logout", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.Logout)

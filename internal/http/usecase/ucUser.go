@@ -26,28 +26,23 @@ func (uc *UseCase) RegisterUser(requestUser model.UserRegisterRequest) (model.Us
 	if len(requestUser.Password) < 8 || len(requestUser.Password) > 50 {
 		return model.UserLoginResponse{}, errors.New("Пароль должен содержать от 8 до 50 символов")
 	}
-
 	candidate, err := uc.Repository.GetByEmail(requestUser.Email)
 	if err != nil {
 		return model.UserLoginResponse{}, err
 	}
-
 	if candidate.Email == requestUser.Email {
 		return model.UserLoginResponse{}, errors.New("Такой пользователь уже существует")
 	}
-
 	requestUser.Password, err = middleware.HashPassword(requestUser.Password)
 	if err != nil {
 		return model.UserLoginResponse{}, err
 	}
-
 	user := model.User{
 		FullName: requestUser.FullName,
 		Email:    requestUser.Email,
 		Password: requestUser.Password,
 		Role:     "пользователь",
 	}
-
 	err = uc.Repository.CreateUser(user)
 	if err != nil {
 		return model.UserLoginResponse{}, err
@@ -56,12 +51,10 @@ func (uc *UseCase) RegisterUser(requestUser model.UserRegisterRequest) (model.Us
 	if err != nil {
 		return model.UserLoginResponse{}, err
 	}
-
 	token, err := middleware.GenerateJWTAccessToken(uint(user.UserID))
 	if err != nil {
 		return model.UserLoginResponse{}, err
 	}
-
 	err = uc.Repository.SaveJWTToken(uint(user.UserID), token.AccessToken)
 	if err != nil {
 		return model.UserLoginResponse{}, err

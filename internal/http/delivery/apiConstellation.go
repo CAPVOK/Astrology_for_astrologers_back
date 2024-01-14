@@ -29,25 +29,21 @@ func (h *Handler) GetConstellations(c *gin.Context) {
 		return
 	}
 	userID := ctxUserID.(uint)
-
-	searchFlightNumber := c.DefaultQuery("searchFlightNumber", "")
+	/* searchFlightNumber := c.DefaultQuery("searchFlightNumber", "") */
 	startFormationDate := c.DefaultQuery("startFormationDate", "")
 	endFormationDate := c.DefaultQuery("endFormationDate", "")
 	constellationStatus := c.DefaultQuery("constellationStatus", "")
-
 	var constellations []model.ConstellationRequest
 	var err error
-
 	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
-		constellations, err = h.UseCase.GetConstellationsModerator(searchFlightNumber, startFormationDate, endFormationDate, constellationStatus, userID)
+		constellations, err = h.UseCase.GetConstellationsModerator("", startFormationDate, endFormationDate, constellationStatus, userID)
 	} else {
-		constellations, err = h.UseCase.GetConstellationsUser(searchFlightNumber, startFormationDate, endFormationDate, constellationStatus, userID)
+		constellations, err = h.UseCase.GetConstellationsUser("", startFormationDate, endFormationDate, constellationStatus, userID)
 	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"constellations": constellations})
 }
 
@@ -68,15 +64,12 @@ func (h *Handler) GetConstellationByID(c *gin.Context) {
 		return
 	}
 	userID := ctxUserID.(uint)
-
 	constellationID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД созвездия"})
 		return
 	}
-
 	var constellation model.ConstellationGetResponse
-
 	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
 		constellation, err = h.UseCase.GetConstellationByIDModerator(uint(constellationID), userID)
 	} else {
@@ -86,8 +79,11 @@ func (h *Handler) GetConstellationByID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusOK, constellation)
+	if constellation.ConstellationID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Созвездие не найдено"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"constellation": constellation})
 }
 
 // DeleteConstellation godoc
@@ -111,8 +107,7 @@ func (h *Handler) DeleteConstellation(c *gin.Context) {
 		return
 	}
 	userID := ctxUserID.(uint)
-
-	searchFlightNumber := c.DefaultQuery("searchFlightNumber", "")
+	/* searchFlightNumber := c.DefaultQuery("searchFlightNumber", "") */
 	startFormationDate := c.DefaultQuery("startFormationDate", "")
 	endFormationDate := c.DefaultQuery("endFormationDate", "")
 	constellationStatus := c.DefaultQuery("constellationStatus", "")
@@ -121,24 +116,20 @@ func (h *Handler) DeleteConstellation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД созвездия"})
 		return
 	}
-
 	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
 		c.JSON(http.StatusForbidden, gin.H{"error": "данный запрос недоступен для модератора"})
 		return
 	}
-
 	err = h.UseCase.DeleteConstellationUser(uint(constellationID), userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	constellations, err := h.UseCase.GetConstellationsUser(searchFlightNumber, startFormationDate, endFormationDate, constellationStatus, userID)
+	constellations, err := h.UseCase.GetConstellationsUser("", startFormationDate, endFormationDate, constellationStatus, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"constellations": constellations})
 }
 
@@ -153,39 +144,45 @@ func (h *Handler) DeleteConstellation(c *gin.Context) {
 // @Failure 400 {object} model.ConstellationGetResponse "Недопустимый идентификатор созвездия или ошибка чтения JSON объекта"
 // @Failure 500 {object} model.ConstellationGetResponse "Ошибка сервера"
 // @Router /constellation/{id}/update [put]
-func (h *Handler) UpdateConstellationFlightNumber(c *gin.Context) {
+func (h *Handler) UpdateConstellation(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
 		return
 	}
 	userID := ctxUserID.(uint)
-
 	constellationID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД созвездия"})
 		return
 	}
-
-	var flightNumber model.ConstellationUpdateRequest
-	if err := c.BindJSON(&flightNumber); err != nil {
+	var constellation model.ConstellationUpdateRequest
+	if err := c.BindJSON(&constellation); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ошибка чтения JSON объекта"})
 		return
 	}
-
-	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
-		err = h.UseCase.UpdateFlightNumberModerator(uint(constellationID), userID, flightNumber)
+	err = h.UseCase.UpdateConstellationUser(uint(constellationID), userID, constellation)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	newConstellation, err := h.UseCase.GetConstellationByIDUser(uint(constellationID), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"constellation": newConstellation})
+	/* if middleware.ModeratorOnly(h.UseCase.Repository, c) {
+		err = h.UseCase.UpdateFlightNumberModerator(uint(constellationID), userID, constellation)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-
 		constellation, err := h.UseCase.GetConstellationByIDModerator(uint(constellationID), userID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-
 		c.JSON(http.StatusOK, gin.H{"constellation": constellation})
 	} else {
 		err = h.UseCase.UpdateConstellationUser(uint(constellationID), userID, flightNumber)
@@ -193,15 +190,13 @@ func (h *Handler) UpdateConstellationFlightNumber(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-
 		constellation, err := h.UseCase.GetConstellationByIDUser(uint(constellationID), userID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-
 		c.JSON(http.StatusOK, gin.H{"constellation": constellation})
-	}
+	} */
 }
 
 // UpdateConstellationStatusUser godoc
@@ -221,29 +216,25 @@ func (h *Handler) UpdateConstellationStatusUser(c *gin.Context) {
 		return
 	}
 	userID := ctxUserID.(uint)
-
 	constellationID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "недоупстимый ИД созвездия"})
 		return
 	}
-
 	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
 		c.JSON(http.StatusForbidden, gin.H{"error": "данный запрос доступен только пользователю"})
 		return
 	} else {
-		err = h.UseCase.UpdateConstellationStatusUser(uint(constellationID), userID)
+		err = h.UseCase.UpdateConstellationStatusUser(userID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-
 		constellation, err := h.UseCase.GetConstellationByIDUser(uint(constellationID), userID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-
 		c.JSON(http.StatusOK, gin.H{"constellation": constellation})
 	}
 }
@@ -296,5 +287,59 @@ func (h *Handler) UpdateConstellationStatusModerator(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusForbidden, gin.H{"error": "данный запрос доступен только модератору"})
 		return
+	}
+}
+
+func (h *Handler) UpdateConstellationStatus(c *gin.Context) {
+	ctxUserID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
+		return
+	}
+	userID := ctxUserID.(uint)
+
+	constellationID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД созвездия"})
+		return
+	}
+	var constellationStatus model.ConstellationUpdateStatusRequest
+	if err := c.BindJSON(&constellationStatus); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
+		err = h.UseCase.UpdateConstellationStatusModerator(uint(constellationID), userID, constellationStatus)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		constellation, err := h.UseCase.GetConstellationByIDUser(uint(constellationID), userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		if constellation.ConstellationID == 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Созвездие не найдено"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"constellation": constellation})
+	} else {
+		err = h.UseCase.UpdateConstellationStatusUser(userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		constellation, err := h.UseCase.GetConstellationByIDUser(uint(constellationID), userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		if constellation.ConstellationID == 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Созвездие не найдено"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"constellation": constellation})
 	}
 }
