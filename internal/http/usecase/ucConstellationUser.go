@@ -62,27 +62,27 @@ func (uc *UseCase) UpdateConstellationUser(constellationID, userID uint, constel
 	return nil
 }
 
-func (uc *UseCase) UpdateConstellationStatusUser(userID uint) error {
+func (uc *UseCase) UpdateConstellationStatusUser(userID uint) (uint, error) {
 	if userID <= 0 {
-		return errors.New("недопустимый ИД пользователя")
+		return 0, errors.New("недопустимый ИД пользователя")
 	}
 	data, err := uc.Repository.GetPlanets("", userID)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	constellation, err := uc.Repository.GetConstellationByIDUser(data.ConstellationID, userID)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if constellation.ConstellationID == 0 {
-		return errors.New("чернового созведия не существует")
+		return 0, errors.New("чернового созведия не существует")
 	}
 	if len(constellation.Planets) == 0 {
-		return errors.New("пустое создездие")
+		return 0, errors.New("пустое создездие")
 	}
 	err = uc.Repository.UpdateConstellationStatusUser(data.ConstellationID, userID)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return constellation.ConstellationID, nil
 }

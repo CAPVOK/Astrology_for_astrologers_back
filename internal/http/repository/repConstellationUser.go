@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"space/internal/model"
@@ -24,6 +25,8 @@ func (r *Repository) GetConstellationsUser(searchName, startFormationDate, endFo
 
 func (r *Repository) GetConstellationByIDUser(constellationID, userID uint) (model.ConstellationGetResponse, error) {
 	var constellation model.ConstellationGetResponse
+	log.Println("_constellationID__", constellationID)
+	log.Println("userID", userID)
 	if err := r.db.
 		Table("constellations").
 		Select("constellations.constellation_id, constellations.name, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, users.full_name").
@@ -40,6 +43,9 @@ func (r *Repository) GetConstellationByIDUser(constellationID, userID uint) (mod
 		Scan(&planets).Error; err != nil {
 		return model.ConstellationGetResponse{}, errors.New("ошибка получения планет для созвездия")
 	}
+	if constellation.ConstellationID == 0 {
+		return constellation, errors.New("cозвездие не найдено")
+	}
 	constellation.Planets = planets
 	return constellation, nil
 }
@@ -47,7 +53,7 @@ func (r *Repository) GetConstellationByIDUser(constellationID, userID uint) (mod
 func (r *Repository) DeleteConstellationUser(constellationID, userID uint) error {
 	var constellation model.Constellation
 	if err := r.db.Table("constellations").
-		Where("constellation_id = ? AND user_id = ?", constellationID, userID).
+		Where("constellation_id = ? AND user_id = ? AND constellation_status = ?", constellationID, userID, model.CONSTELLATION_STATUS_DRAFT).
 		First(&constellation).
 		Error; err != nil {
 		return errors.New("созвездие не найдена или не принадлежит указанному пользователю")
@@ -69,7 +75,7 @@ func (r *Repository) DeleteConstellationUser(constellationID, userID uint) error
 func (r *Repository) UpdateConstellationUser(constellationID uint, userID uint, newConstellation model.ConstellationUpdateRequest) error {
 	var constellation model.Constellation
 	if err := r.db.Table("constellations").
-		Where("constellation_id = ? AND user_id = ?", constellationID, userID).
+		Where("constellation_id = ? AND user_id = ? AND constellation_status = ?", constellationID, userID, model.CONSTELLATION_STATUS_DRAFT).
 		First(&constellation).
 		Error; err != nil {
 		return errors.New("созвездие не найдена или не принадлежит указанному пользователю")

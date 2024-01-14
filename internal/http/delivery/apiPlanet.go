@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"space/internal/model"
+	"space/internal/pkg/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +22,7 @@ import (
 func (h *Handler) GetPlanets(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Идентификатор пользователя отсутствует в контексте пп"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Идентификатор пользователя отсутствует в контексте пп"})
 		return
 	}
 	userID := ctxUserID.(uint)
@@ -29,7 +30,7 @@ func (h *Handler) GetPlanets(c *gin.Context) {
 
 	planets, err := h.UseCase.GetPlanets(searchCode, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -48,7 +49,7 @@ func (h *Handler) GetPlanets(c *gin.Context) {
 func (h *Handler) GetPlanetByID(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
 		return
 	}
 	userID := ctxUserID.(uint)
@@ -61,7 +62,7 @@ func (h *Handler) GetPlanetByID(c *gin.Context) {
 
 	planet, err := h.UseCase.GetPlanetByID(uint(planetID), userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -82,33 +83,33 @@ func (h *Handler) GetPlanetByID(c *gin.Context) {
 func (h *Handler) CreatePlanet(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
 		return
 	}
 	userID := ctxUserID.(uint)
-
 	searchCode := c.DefaultQuery("searchCode", "")
 
-	var planet model.PlanetRequest
-
-	if err := c.BindJSON(&planet); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "не удалось прочитать JSON"})
+	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
+		var planet model.PlanetRequest
+		if err := c.BindJSON(&planet); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "не удалось прочитать JSON"})
+			return
+		}
+		err := h.UseCase.CreatePlanet(userID, planet)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		planets, err := h.UseCase.GetPlanets(searchCode, userID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"planets": planets.Planets, "constellationID": planets.ConstellationID})
+	} else {
+		c.JSON(http.StatusForbidden, gin.H{"error": "У вас нет этих прав"})
 		return
 	}
-
-	err := h.UseCase.CreatePlanet(userID, planet)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	planets, err := h.UseCase.GetPlanets(searchCode, userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"planets": planets.Planets, "constellationID": planets.ConstellationID})
 }
 
 // @Summary Удаление планеты
@@ -124,29 +125,34 @@ func (h *Handler) CreatePlanet(c *gin.Context) {
 func (h *Handler) DeletePlanet(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
 		return
 	}
 	userID := ctxUserID.(uint)
-
 	searchCode := c.DefaultQuery("searchName", "")
 
-	planetID, err := strconv.Atoi(c.Param("planet_id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД планеты"})
+	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
+		planetID, err := strconv.Atoi(c.Param("planet_id"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД планеты"})
+			return
+		}
+		err = h.UseCase.DeletePlanet(uint(planetID), userID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		planets, err := h.UseCase.GetPlanets(searchCode, userID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"planets": planets.Planets, "constellationID": planets.ConstellationID})
+	} else {
+		c.JSON(http.StatusForbidden, gin.H{"error": "У вас нет этих прав"})
 		return
 	}
-	err = h.UseCase.DeletePlanet(uint(planetID), userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	planets, err := h.UseCase.GetPlanets(searchCode, userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"planets": planets.Planets, "constellationID": planets.ConstellationID})
+
 }
 
 // @Summary Обновление информации о багаже
@@ -162,36 +168,40 @@ func (h *Handler) DeletePlanet(c *gin.Context) {
 func (h *Handler) UpdatePlanet(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
 		return
 	}
 	userID := ctxUserID.(uint)
-
 	planetID, err := strconv.Atoi(c.Param("planet_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"error": "недопустимый ИД планеты"}})
 		return
 	}
+	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
+		var planet model.PlanetRequest
+		if err := c.BindJSON(&planet); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "не удалось прочитать JSON"})
+			return
+		}
 
-	var planet model.PlanetRequest
-	if err := c.BindJSON(&planet); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "не удалось прочитать JSON"})
+		err = h.UseCase.UpdatePlanet(uint(planetID), uint(userID), planet)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		updatedPlanet, err := h.UseCase.GetPlanetByID(uint(planetID), uint(userID))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"planet": updatedPlanet})
+	} else {
+		c.JSON(http.StatusForbidden, gin.H{"error": "У вас нет этих прав"})
 		return
 	}
 
-	err = h.UseCase.UpdatePlanet(uint(planetID), uint(userID), planet)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	updatedPlanet, err := h.UseCase.GetPlanetByID(uint(planetID), uint(userID))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"planet": updatedPlanet})
 }
 
 // @Summary Добавление планеты к доставке
@@ -207,7 +217,7 @@ func (h *Handler) UpdatePlanet(c *gin.Context) {
 func (h *Handler) AddPlanetToConstellation(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
 		return
 	}
 	userID := ctxUserID.(uint)
@@ -221,12 +231,12 @@ func (h *Handler) AddPlanetToConstellation(c *gin.Context) {
 	}
 	err = h.UseCase.AddPlanetToConstellation(uint(planetID), uint(userID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	planets, err := h.UseCase.GetPlanets(searchCode, uint(userID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"planets": planets.Planets, "constellationID": planets.ConstellationID})
@@ -245,7 +255,7 @@ func (h *Handler) AddPlanetToConstellation(c *gin.Context) {
 func (h *Handler) RemovePlanetFromConstellation(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
 		return
 	}
 	userID := ctxUserID.(uint)
@@ -257,17 +267,17 @@ func (h *Handler) RemovePlanetFromConstellation(c *gin.Context) {
 	}
 	err = h.UseCase.RemovePlanetFromConstellation(uint(planetID), uint(userID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	planets, err := h.UseCase.GetPlanets(searchCode, uint(userID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	constellation, err := h.UseCase.GetConstellationByIDUser(uint(planets.ConstellationID), uint(userID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"constellation": constellation})
@@ -288,7 +298,7 @@ func (h *Handler) RemovePlanetFromConstellation(c *gin.Context) {
 func (h *Handler) AddPlanetImage(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Идентификатор пользователя отсутствует в контексте"})
 		return
 	}
 	userID := ctxUserID.(uint)
@@ -298,39 +308,37 @@ func (h *Handler) AddPlanetImage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД планеты"})
 		return
 	}
-
-	image, err := c.FormFile("image")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимое изображение"})
+	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
+		image, err := c.FormFile("image")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимое изображение"})
+			return
+		}
+		file, err := image.Open()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "не удалось открыть изображение"})
+			return
+		}
+		defer file.Close()
+		imageBytes, err := io.ReadAll(file)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "не удалось прочитать изображение в байтах"})
+			return
+		}
+		contentType := image.Header.Get("Content-Type")
+		err = h.UseCase.AddPlanetImage(uint(planetID), uint(userID), imageBytes, contentType)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		planet, err := h.UseCase.GetPlanetByID(uint(planetID), uint(userID))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"planet": planet})
+	} else {
+		c.JSON(http.StatusForbidden, gin.H{"error": "У вас нет этих прав"})
 		return
 	}
-
-	file, err := image.Open()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "не удалось открыть изображение"})
-		return
-	}
-	defer file.Close()
-
-	imageBytes, err := io.ReadAll(file)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "не удалось прочитать изображение в байтах"})
-		return
-	}
-
-	contentType := image.Header.Get("Content-Type")
-
-	err = h.UseCase.AddPlanetImage(uint(planetID), uint(userID), imageBytes, contentType)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	planet, err := h.UseCase.GetPlanetByID(uint(planetID), uint(userID))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"planet": planet})
 }

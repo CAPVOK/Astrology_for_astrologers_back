@@ -71,7 +71,14 @@ func (uc *UseCase) UpdateConstellationStatusModerator(constellationID, moderator
 		}
 		return nil
 	} else if constellationStatus.ConstellationStatus == model.CONSTELLATION_STATUS_COMPLETED || constellationStatus.ConstellationStatus == model.CONSTELLATION_STATUS_REJECTED {
-		err := uc.Repository.UpdateConstellationStatusModerator(constellationID, moderatorID, constellationStatus)
+		constellation, err := uc.Repository.GetConstellationByIDModerator(constellationID, moderatorID)
+		if err != nil {
+			return err
+		}
+		if constellation.ConstellationStatus != model.CONSTELLATION_STATUS_WORK {
+			return errors.New("текущее cозвездие еще не сформировано ")
+		}
+		err = uc.Repository.UpdateConstellationStatusModerator(constellationID, moderatorID, constellationStatus)
 		if err != nil {
 			return err
 		}

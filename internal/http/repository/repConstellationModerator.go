@@ -41,6 +41,9 @@ func (r *Repository) GetConstellationByIDModerator(constellationID, moderatorID 
 		return model.ConstellationGetResponse{}, errors.New("ошибка получения планет для созвездия")
 	}
 	constellation.Planets = planets
+	if constellation.ConstellationID == 0 {
+		return constellation, errors.New("ошибка получения созвездия по ИД")
+	}
 	return constellation, nil
 }
 
