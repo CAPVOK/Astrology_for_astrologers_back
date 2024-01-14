@@ -11,7 +11,7 @@ func (r *Repository) GetConstellationsModerator(searchName, startFormationDate, 
 	query := r.db.Table("constellations").
 		Select("DISTINCT constellations.constellation_id, constellations.name, constellations.start_date, constellations.end_date, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, users.full_name").
 		Joins("JOIN users ON users.user_id = constellations.user_id").
-		Where("constellations.constellation_status LIKE ? AND constellations.name LIKE ? AND constellations.constellation_status != ?", constellationStatus, searchName, model.CONSTELLATION_STATUS_DELETED)
+		Where("constellations.constellation_status LIKE ? AND constellations.name LIKE ? AND constellations.constellation_status != ? AND constellations.constellation_status != ?", constellationStatus, searchName, model.CONSTELLATION_STATUS_DELETED, model.CONSTELLATION_STATUS_DRAFT)
 	if startFormationDate != "" && endFormationDate != "" {
 		query = query.Where("constellations.formation_date BETWEEN ? AND ?", startFormationDate, endFormationDate)
 	}

@@ -11,16 +11,18 @@ import (
 )
 
 // GetConstellations godoc
-// @Summary Получение списка доставок
-// @Description Возвращает список всех не удаленных доставок
+// @Summary Получение списка созвездий
+// @Description Возвращает список всех не удаленных созвездий
 // @Tags Созвездие
 // @Produce json
-// @Param searchFlightNumber query string false "Номер рейса" Format(email)
 // @Param startFormationDate query string false "Начало даты формирования" Format(email)
 // @Param endFormationDate query string false "Конец даты формирования" Format(email)
 // @Param constellationStatus query string false "Статус созвездия" Format(email)
-// @Success 200 {object} model.ConstellationRequest "Список доставок"
-// @Failure 500 {object} model.ConstellationRequest "Ошибка сервера"
+// @Success 200 {object} model.ConstellationRequest "Список созвездий"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
 // @Router /constellation [get]
 func (h *Handler) GetConstellations(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
@@ -49,14 +51,16 @@ func (h *Handler) GetConstellations(c *gin.Context) {
 
 // GetConstellationByID godoc
 // @Summary Получение созвездия по идентификатору
-// @Description Возвращает информацию о доставке по её идентификатору
+// @Description Возвращает информацию о созвездии по её идентификатору
 // @Tags Созвездие
 // @Produce json
-// @Param id path int true "Идентификатор созвездия"
-// @Success 200 {object} model.ConstellationGetResponse "Информация о доставке"
-// @Failure 400 {object} model.ConstellationGetResponse "Недопустимый идентификатор созвездия"
-// @Failure 500 {object} model.ConstellationGetResponse "Ошибка сервера"
-// @Router /constellation/{id} [get]
+// @Param constellation_id path int true "Идентификатор созвездия"
+// @Success 200 {object} model.ConstellationGetResponse "Информация о созвездии"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
+// @Router /constellation/{constellation_id} [get]
 func (h *Handler) GetConstellationByID(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
@@ -92,14 +96,15 @@ func (h *Handler) GetConstellationByID(c *gin.Context) {
 // @Tags Созвездие
 // @Produce json
 // @Param id path int true "Идентификатор созвездия"
-// @Param searchFlightNumber query string false "Номер рейса" Format(email)
 // @Param startFormationDate query string false "Начало даты формирования" Format(email)
 // @Param endFormationDate query string false "Конец даты формирования" Format(email)
 // @Param constellationStatus query string false "Статус созвездия" Format(email)
 // @Success 200 {object} model.ConstellationRequest "Список багажей"
-// @Failure 400 {object} model.ConstellationRequest "Недопустимый идентификатор созвездия"
-// @Failure 500 {object} model.ConstellationRequest "Ошибка сервера"
-// @Router /constellation/{id}/delete [delete]
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
+// @Router /constellation/{constellation_id}/delete [delete]
 func (h *Handler) DeleteConstellation(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
@@ -143,17 +148,19 @@ func (h *Handler) DeleteConstellation(c *gin.Context) {
 	}
 }
 
-// UpdateConstellationFlightNumber godoc
-// @Summary Обновление номера рейса созвездия
-// @Description Обновляет номер рейса для созвездия по её идентификатору
+// UpdateConstellation godoc
+// @Summary Обновление созвездие
+// @Description Обновляет поля созвездия по её идентификатору
 // @Tags Созвездие
 // @Produce json
-// @Param id path int true "Идентификатор созвездия"
-// @Param flightNumber body model.ConstellationUpdateFlightNumberRequest true "Новый номер рейса"
-// @Success 200 {object} model.ConstellationGetResponse "Информация о доставке"
-// @Failure 400 {object} model.ConstellationGetResponse "Недопустимый идентификатор созвездия или ошибка чтения JSON объекта"
-// @Failure 500 {object} model.ConstellationGetResponse "Ошибка сервера"
-// @Router /constellation/{id}/update [put]
+// @Param constellation_id path int true "Идентификатор созвездия"
+// @Param  newConstellation body model.ConstellationUpdateRequest true "Новое созвездие"
+// @Success 200 {object} model.ConstellationGetResponse "Информация о созвездии"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
+// @Router /constellation/{constellation_id}/update [put]
 func (h *Handler) UpdateConstellation(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
@@ -209,16 +216,6 @@ func (h *Handler) UpdateConstellation(c *gin.Context) {
 	} */
 }
 
-// UpdateConstellationStatusUser godoc
-// @Summary Обновление статуса созвездия для пользователя
-// @Description Обновляет статус созвездия для пользователя по идентификатору созвездия
-// @Tags Созвездие
-// @Produce json
-// @Param id path int true "Идентификатор созвездия"
-// @Success 200 {object} model.ConstellationGetResponse "Информация о доставке"
-// @Failure 400 {object} model.ConstellationGetResponse "Недопустимый идентификатор созвездия"
-// @Failure 500 {object} model.ConstellationGetResponse "Ошибка сервера"
-// @Router /constellation/{id}/user [put]
 /* func (h *Handler) UpdateConstellationStatusUser(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
@@ -249,17 +246,6 @@ func (h *Handler) UpdateConstellation(c *gin.Context) {
 	}
 } */
 
-// UpdateConstellationStatusModerator godoc
-// @Summary Обновление статуса созвездия для модератора
-// @Description Обновляет статус созвездия для модератора по идентификатору созвездия
-// @Tags Созвездие
-// @Produce json
-// @Param id path int true "Идентификатор созвездия"
-// @Param constellationStatus body model.ConstellationUpdateStatusRequest true "Новый статус созвездия"
-// @Success 200 {object} model.ConstellationGetResponse "Информация о доставке"
-// @Failure 400 {object} model.ConstellationGetResponse "Недопустимый идентификатор созвездия или ошибка чтения JSON объекта"
-// @Failure 500 {object} model.ConstellationGetResponse "Ошибка сервера"
-// @Router /constellation/{id}/status [put]
 /* func (h *Handler) UpdateConstellationStatusModerator(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
@@ -300,6 +286,19 @@ func (h *Handler) UpdateConstellation(c *gin.Context) {
 	}
 } */
 
+// UpdateConstellationStatus godoc
+// @Summary Обновление статуса созвездия
+// @Description Обновляет статус чернового созвездия для юзера и обновляет статус созвездия по идентификатору созвездия и новому статусу для модератора
+// @Tags Созвездие
+// @Produce json
+// @Param constellation_id path int true "Идентификатор созвездия"
+// @Param constellationStatus body model.ConstellationUpdateStatusRequest true "Новый статус созвездия"
+// @Success 200 {object} model.ConstellationGetResponse "Информация о созвездии"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
+// @Router /constellation/{constellation_id}/status/moderator [put]
 func (h *Handler) UpdateConstellationStatus(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {

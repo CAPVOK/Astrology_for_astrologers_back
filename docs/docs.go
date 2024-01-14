@@ -15,36 +15,360 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/constellation": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Возвращает список всех не удаленных созвездий",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Созвездие"
+                ],
+                "summary": "Получение списка созвездий",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Начало даты формирования",
+                        "name": "startFormationDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Конец даты формирования",
+                        "name": "endFormationDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Статус созвездия",
+                        "name": "constellationStatus",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список созвездий",
+                        "schema": {
+                            "$ref": "#/definitions/model.ConstellationRequest"
+                        }
+                    },
+                    "400": {
+                        "description": "Обработанная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/constellation/{constellation_id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Возвращает информацию о созвездии по её идентификатору",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Созвездие"
+                ],
+                "summary": "Получение созвездия по идентификатору",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор созвездия",
+                        "name": "constellation_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Информация о созвездии",
+                        "schema": {
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Обработанная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/constellation/{constellation_id}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Удаляет доставку по её идентификатору",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Созвездие"
+                ],
+                "summary": "Удаление созвездия",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор созвездия",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Начало даты формирования",
+                        "name": "startFormationDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Конец даты формирования",
+                        "name": "endFormationDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Статус созвездия",
+                        "name": "constellationStatus",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список багажей",
+                        "schema": {
+                            "$ref": "#/definitions/model.ConstellationRequest"
+                        }
+                    },
+                    "400": {
+                        "description": "Обработанная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/constellation/{constellation_id}/status/moderator": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Обновляет статус чернового созвездия для юзера и обновляет статус созвездия по идентификатору созвездия и новому статусу для модератора",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Созвездие"
+                ],
+                "summary": "Обновление статуса созвездия",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор созвездия",
+                        "name": "constellation_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Новый статус созвездия",
+                        "name": "constellationStatus",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ConstellationUpdateStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Информация о созвездии",
+                        "schema": {
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Обработанная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/constellation/{constellation_id}/update": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Обновляет поля созвездия по её идентификатору",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Созвездие"
+                ],
+                "summary": "Обновление созвездие",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор созвездия",
+                        "name": "constellation_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Новое созвездие",
+                        "name": "newConstellation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ConstellationUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Информация о созвездии",
+                        "schema": {
+                            "$ref": "#/definitions/model.ConstellationGetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Обработанная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/planet": {
             "get": {
-                "description": "Возращает список всех активных планетаей",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Возращает список всех активных планет и ид черновой заявки",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Планета"
                 ],
-                "summary": "Получение списка планеты",
+                "summary": "Получение списка планет",
                 "parameters": [
                     {
                         "type": "string",
                         "format": "email",
-                        "description": "Код планеты",
-                        "name": "searchCode",
+                        "description": "Название планеты",
+                        "name": "searchName",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список планетаей",
+                        "description": "Список планет",
                         "schema": {
                             "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
-                    "500": {
-                        "description": "Ошибка сервера",
+                    "400": {
+                        "description": "Обработанная ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.PlanetsGetResponse"
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -52,6 +376,11 @@ const docTemplate = `{
         },
         "/planet/create": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Создает новый планета с предоставленными данными",
                 "consumes": [
                     "application/json"
@@ -62,12 +391,12 @@ const docTemplate = `{
                 "tags": [
                     "Планета"
                 ],
-                "summary": "Создание нового планеты",
+                "summary": "Создание нового планетаа",
                 "parameters": [
                     {
                         "type": "string",
                         "format": "email",
-                        "description": "Код планеты",
+                        "description": "Код планетаа",
                         "name": "searchCode",
                         "in": "query"
                     },
@@ -89,15 +418,27 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Некорректный запрос",
+                        "description": "Обработанная ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.PlanetsGetResponse"
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "У пользователя нет прав для этого запроса",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.PlanetsGetResponse"
+                            "type": "string"
                         }
                     }
                 }
@@ -105,7 +446,12 @@ const docTemplate = `{
         },
         "/planet/{planet_id}": {
             "get": {
-                "description": "Возвращает информацию о планетае по его ID",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Возвращает информацию о планете по ее ID",
                 "produces": [
                     "application/json"
                 ],
@@ -116,7 +462,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID планеты",
+                        "description": "ID планетаа",
                         "name": "planet_id",
                         "in": "path",
                         "required": true
@@ -130,63 +476,15 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Некорректный запрос",
+                        "description": "Обработанная ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.Planet"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.Planet"
-                        }
-                    }
-                }
-            }
-        },
-        "/planet/{planet_id}/delete": {
-            "delete": {
-                "description": "Удаляет планета по его ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Планета"
-                ],
-                "summary": "Удаление планеты",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID планеты",
-                        "name": "planet_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "format": "email",
-                        "description": "Код планеты",
-                        "name": "searchCode",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Список планетаей",
-                        "schema": {
-                            "$ref": "#/definitions/model.PlanetsGetResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Некорректный запрос",
-                        "schema": {
-                            "$ref": "#/definitions/model.PlanetsGetResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/model.PlanetsGetResponse"
+                            "type": "string"
                         }
                     }
                 }
@@ -194,14 +492,19 @@ const docTemplate = `{
         },
         "/planet/{planet_id}/constellation": {
             "post": {
-                "description": "Добавляет планета к доставке по его ID",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Добавляет планету к созвездию по ее ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Планета"
                 ],
-                "summary": "Добавление планеты к доставке",
+                "summary": "Добавление планеты к созвездии",
                 "parameters": [
                     {
                         "type": "integer",
@@ -214,130 +517,44 @@ const docTemplate = `{
                         "type": "string",
                         "format": "email",
                         "description": "Код планеты",
-                        "name": "searchCode",
+                        "name": "searchName",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список планетаей",
+                        "description": "Список планет",
                         "schema": {
                             "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "400": {
-                        "description": "Некорректный запрос",
+                        "description": "Обработанная ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.PlanetsGetResponse"
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.PlanetsGetResponse"
+                            "type": "string"
                         }
                     }
                 }
-            }
-        },
-        "/planet/{planet_id}/image": {
-            "post": {
-                "description": "Добавляет изображение к планетау по его ID",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Планета"
-                ],
-                "summary": "Добавление изображения к планетау",
-                "parameters": [
+            },
+            "delete": {
+                "security": [
                     {
-                        "type": "integer",
-                        "description": "ID планеты",
-                        "name": "planet_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "Изображение планеты",
-                        "name": "image",
-                        "in": "formData",
-                        "required": true
+                        "ApiKeyAuth": []
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Planet"
-                        }
-                    },
-                    "400": {
-                        "description": "Некорректный запрос",
-                        "schema": {
-                            "$ref": "#/definitions/model.Planet"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/model.Planet"
-                        }
-                    }
-                }
-            }
-        },
-        "/planet/{planet_id}/update": {
-            "put": {
-                "description": "Обновляет информацию о планетае по его ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Планета"
-                ],
-                "summary": "Обновление информации о планетае",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID планеты",
-                        "name": "planet_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Информация о планетае",
-                        "schema": {
-                            "$ref": "#/definitions/model.Planet"
-                        }
-                    },
-                    "400": {
-                        "description": "Некорректный запрос",
-                        "schema": {
-                            "$ref": "#/definitions/model.Planet"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/model.Planet"
-                        }
-                    }
-                }
-            }
-        },
-        "/planets/{planet_id}/constellation": {
-            "post": {
-                "description": "Удаляет планета из созвездия по его ID",
+                "description": "Удаляет планета из созвездия по еe ID",
                 "produces": [
                     "application/json"
                 ],
@@ -357,372 +574,227 @@ const docTemplate = `{
                         "type": "string",
                         "format": "email",
                         "description": "Код планеты",
-                        "name": "searchCode",
+                        "name": "searchName",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список планетаей",
+                        "description": "Список планет",
                         "schema": {
                             "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "400": {
-                        "description": "Некорректный запрос",
+                        "description": "Обработанная ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.PlanetsGetResponse"
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.PlanetsGetResponse"
+                            "type": "string"
                         }
                     }
                 }
             }
         },
-        "/constellation": {
-            "get": {
-                "description": "Возвращает список всех не удаленных доставок",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Созвездие"
-                ],
-                "summary": "Получение списка доставок",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "format": "email",
-                        "description": "Номер рейса",
-                        "name": "searchFlightNumber",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "format": "email",
-                        "description": "Начало даты формирования",
-                        "name": "startFormationDate",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "format": "email",
-                        "description": "Конец даты формирования",
-                        "name": "endFormationDate",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "format": "email",
-                        "description": "Статус созвездия",
-                        "name": "constellationStatus",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Список доставок",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationRequest"
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationRequest"
-                        }
-                    }
-                }
-            }
-        },
-        "/constellation/{id}": {
-            "get": {
-                "description": "Возвращает информацию о доставке по её идентификатору",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Созвездие"
-                ],
-                "summary": "Получение созвездия по идентификатору",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Идентификатор созвездия",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Информация о доставке",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Недопустимый идентификатор созвездия",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/constellation/{id}/delete": {
+        "/planet/{planet_id}/delete": {
             "delete": {
-                "description": "Удаляет доставку по её идентификатору",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Удаляет планету по его ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Созвездие"
+                    "Планета"
                 ],
-                "summary": "Удаление созвездия",
+                "summary": "Удаление планеты",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Идентификатор созвездия",
-                        "name": "id",
+                        "description": "ID планетаа",
+                        "name": "planet_id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
                         "format": "email",
-                        "description": "Номер рейса",
-                        "name": "searchFlightNumber",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "format": "email",
-                        "description": "Начало даты формирования",
-                        "name": "startFormationDate",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "format": "email",
-                        "description": "Конец даты формирования",
-                        "name": "endFormationDate",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "format": "email",
-                        "description": "Статус созвездия",
-                        "name": "constellationStatus",
+                        "description": "Название планеты",
+                        "name": "searchName",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список планетаей",
+                        "description": "Список планет",
                         "schema": {
-                            "$ref": "#/definitions/model.ConstellationRequest"
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
                     },
                     "400": {
-                        "description": "Недопустимый идентификатор созвездия",
+                        "description": "Обработанная ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.ConstellationRequest"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Ошибка сервера",
+                    "401": {
+                        "description": "Пользователь не авторизован",
                         "schema": {
-                            "$ref": "#/definitions/model.ConstellationRequest"
-                        }
-                    }
-                }
-            }
-        },
-        "/constellation/{id}/status": {
-            "put": {
-                "description": "Обновляет статус созвездия для модератора по идентификатору созвездия",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Созвездие"
-                ],
-                "summary": "Обновление статуса созвездия для модератора",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Идентификатор созвездия",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Новый статус созвездия",
-                        "name": "constellationStatus",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationUpdateStatusRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Информация о доставке",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
-                    "400": {
-                        "description": "Недопустимый идентификатор созвездия или ошибка чтения JSON объекта",
+                    "403": {
+                        "description": "У пользователя нет прав для этого запроса",
                         "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/constellation/{id}/update": {
-            "put": {
-                "description": "Обновляет номер рейса для созвездия по её идентификатору",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Созвездие"
-                ],
-                "summary": "Обновление номера рейса созвездия",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Идентификатор созвездия",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Новый номер рейса",
-                        "name": "flightNumber",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationUpdateFlightNumberRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Информация о доставке",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Недопустимый идентификатор созвездия или ошибка чтения JSON объекта",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/constellation/{id}/user": {
-            "put": {
-                "description": "Обновляет статус созвездия для пользователя по идентификатору созвездия",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Созвездие"
-                ],
-                "summary": "Обновление статуса созвездия для пользователя",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Идентификатор созвездия",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Информация о доставке",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Недопустимый идентификатор созвездия",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/model.ConstellationGetResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/": {
-            "get": {
-                "description": "Получение данных пользователя по его идентификатору",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Получить пользователя по идентификатору",
-                "responses": {
-                    "200": {
-                        "description": "Успешный ответ",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.User"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный запрос",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/planet/{planet_id}/image": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Добавляет изображение к планете по ее ID",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Планета"
+                ],
+                "summary": "Добавление изображения к планете",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID планета",
+                        "name": "planet_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Изображение планеты",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Информация о планете с изображением",
+                        "schema": {
+                            "$ref": "#/definitions/model.Planet"
+                        }
+                    },
+                    "400": {
+                        "description": "Обработанная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "У пользователя нет прав для этого запроса",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/planet/{planet_id}/update": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Обновляет информацию о планетe по его ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Планета"
+                ],
+                "summary": "Обновление информации о планетe",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID планеты",
+                        "name": "planet_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Информация о планетe",
+                        "schema": {
+                            "$ref": "#/definitions/model.Planet"
+                        }
+                    },
+                    "400": {
+                        "description": "Обработанная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "У пользователя нет прав для этого запроса",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -754,30 +826,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Успешный ответ",
+                        "description": "Токен",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.UserLoginResponse"
                         }
                     },
                     "400": {
-                        "description": "Неверный запрос",
+                        "description": "Обработанная ошибка сервера",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     }
                 }
@@ -785,6 +848,11 @@ const docTemplate = `{
         },
         "/user/logout": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Выход пользователя из системы и удаление токена из куков",
                 "produces": [
                     "application/json"
@@ -797,69 +865,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Успешный ответ",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     },
                     "400": {
-                        "description": "Неверный запрос",
+                        "description": "Обработанная ошибка сервера",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/refreshtoken": {
-            "post": {
-                "description": "Обновление пары токенов",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Пользователь"
-                ],
-                "summary": "Обновление токенов",
-                "responses": {
-                    "200": {
-                        "description": "Успешный ответ",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный запрос",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     }
                 }
@@ -890,13 +908,22 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Успешно зарегистрированный пользователь",
+                    "200": {
+                        "description": "Токен",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.User"
-                            }
+                            "$ref": "#/definitions/model.UserLoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Обработанная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -904,126 +931,40 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "model.Planet": {
-            "type": "object",
-            "properties": {
-                "airline": {
-                    "type": "string",
-                    "example": "AirlineX"
-                },
-                "planet_code": {
-                    "type": "string",
-                    "example": "ABC123"
-                },
-                "planet_id": {
-                    "type": "integer"
-                },
-                "planet_status": {
-                    "type": "string",
-                    "example": "checked"
-                },
-                "planet_type": {
-                    "type": "string",
-                    "example": "suitcase"
-                },
-                "owner_name": {
-                    "type": "string",
-                    "example": "John Doe"
-                },
-                "pasport_details": {
-                    "type": "string",
-                    "example": "123456789"
-                },
-                "photo": {
-                    "type": "string",
-                    "example": "http://example.com/planet.jpg"
-                },
-                "size": {
-                    "type": "string",
-                    "example": "large"
-                },
-                "weight": {
-                    "type": "number",
-                    "example": 23.5
-                }
-            }
-        },
-        "model.PlanetRequest": {
-            "type": "object",
-            "properties": {
-                "airline": {
-                    "type": "string",
-                    "example": "AirlineX"
-                },
-                "planet_code": {
-                    "type": "string",
-                    "example": "ABC123"
-                },
-                "planet_type": {
-                    "type": "string",
-                    "example": "suitcase"
-                },
-                "owner_name": {
-                    "type": "string",
-                    "example": "John Doe"
-                },
-                "pasport_details": {
-                    "type": "string",
-                    "example": "123456789"
-                },
-                "size": {
-                    "type": "string",
-                    "example": "large"
-                },
-                "weight": {
-                    "type": "number",
-                    "example": 23.5
-                }
-            }
-        },
-        "model.PlanetsGetResponse": {
-            "type": "object",
-            "properties": {
-                "planets": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Planet"
-                    }
-                },
-                "constellation_id": {
-                    "type": "integer",
-                    "example": 1
-                }
-            }
-        },
         "model.ConstellationGetResponse": {
             "type": "object",
             "properties": {
-                "planets": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Planet"
-                    }
-                },
                 "confirmation_date": {
                     "type": "string"
                 },
                 "creation_date": {
                     "type": "string"
                 },
-                "constellation_id": {
-                    "type": "integer"
-                },
-                "constellation_status": {
-                    "type": "string"
-                },
-                "flight_number": {
+                "end_date": {
                     "type": "string"
                 },
                 "formation_date": {
                     "type": "string"
                 },
                 "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "planets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanetInConstellation"
+                    }
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }
@@ -1037,13 +978,7 @@ const docTemplate = `{
                 "creation_date": {
                     "type": "string"
                 },
-                "constellation_id": {
-                    "type": "integer"
-                },
-                "constellation_status": {
-                    "type": "string"
-                },
-                "flight_number": {
+                "end_date": {
                     "type": "string"
                 },
                 "formation_date": {
@@ -1051,13 +986,31 @@ const docTemplate = `{
                 },
                 "full_name": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },
-        "model.ConstellationUpdateFlightNumberRequest": {
+        "model.ConstellationUpdateRequest": {
             "type": "object",
             "properties": {
-                "flight_number": {
+                "end_date": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "start_date": {
                     "type": "string"
                 }
             }
@@ -1065,8 +1018,132 @@ const docTemplate = `{
         "model.ConstellationUpdateStatusRequest": {
             "type": "object",
             "properties": {
-                "constellation_status": {
+                "constellationStatus": {
                     "type": "string"
+                }
+            }
+        },
+        "model.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Planet": {
+            "type": "object",
+            "properties": {
+                "color1": {
+                    "type": "string",
+                    "example": "#ababab"
+                },
+                "color2": {
+                    "type": "string",
+                    "example": "#8a8a8a"
+                },
+                "discovered": {
+                    "type": "string",
+                    "example": "Неизвестно"
+                },
+                "distance": {
+                    "type": "string",
+                    "example": "Неизвестно"
+                },
+                "imageName": {
+                    "type": "string",
+                    "example": "http://example.com/mars.jpg"
+                },
+                "info": {
+                    "type": "string",
+                    "example": "Неизвестно"
+                },
+                "mass": {
+                    "type": "string",
+                    "example": "Неизвестно"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Планета"
+                },
+                "planetId": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "активна"
+                }
+            }
+        },
+        "model.PlanetInConstellation": {
+            "type": "object",
+            "properties": {
+                "color1": {
+                    "type": "string",
+                    "example": "#ababab"
+                },
+                "color2": {
+                    "type": "string",
+                    "example": "#8a8a8a"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "imageName": {
+                    "type": "string",
+                    "example": "http://example.com/mars.jpg"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Планета"
+                }
+            }
+        },
+        "model.PlanetRequest": {
+            "type": "object",
+            "properties": {
+                "color1": {
+                    "type": "string",
+                    "example": "#ababab"
+                },
+                "color2": {
+                    "type": "string",
+                    "example": "#8a8a8a"
+                },
+                "discovered": {
+                    "type": "string",
+                    "example": "Неизвестно"
+                },
+                "distance": {
+                    "type": "string",
+                    "example": "Неизвестно"
+                },
+                "info": {
+                    "type": "string",
+                    "example": "Неизвестно"
+                },
+                "mass": {
+                    "type": "string",
+                    "example": "Неизвестно"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Планета"
+                }
+            }
+        },
+        "model.PlanetsGetResponse": {
+            "type": "object",
+            "properties": {
+                "constellationId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "planets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Planet"
+                    }
                 }
             }
         },
@@ -1081,26 +1158,6 @@ const docTemplate = `{
                 "ModeratorRole"
             ]
         },
-        "model.User": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "role": {
-                    "$ref": "#/definitions/model.Role"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.UserLoginRequest": {
             "type": "object",
             "properties": {
@@ -1112,13 +1169,27 @@ const docTemplate = `{
                 }
             }
         },
+        "model.UserLoginResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/model.Role"
+                }
+            }
+        },
         "model.UserRegisterRequest": {
             "type": "object",
             "properties": {
                 "email": {
                     "type": "string"
                 },
-                "full_name": {
+                "fullName": {
                     "type": "string"
                 },
                 "password": {
@@ -1126,17 +1197,24 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "http://localhost:8081",
+	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "BagTracker RestAPI",
+	Description:      "API server for Space application",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

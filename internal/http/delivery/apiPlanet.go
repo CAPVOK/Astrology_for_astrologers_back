@@ -11,13 +11,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary Получение списка планеты
-// @Description Возращает список всех активных багажей
+// @Summary Получение списка планет
+// @Description Возращает список всех активных планет и ид черновой заявки
 // @Tags Планета
 // @Produce json
-// @Param searchCode query string false "Код планеты" Format(email)
-// @Success 200 {object} model.PlanetsGetResponse "Список багажей"
-// @Failure 500 {object} model.PlanetsGetResponse "Ошибка сервера"
+// @Param searchName query string false "Название планеты" Format(email)
+// @Success 200 {object} model.PlanetsGetResponse "Список планет"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
 // @Router /planet [get]
 func (h *Handler) GetPlanets(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
@@ -26,7 +28,7 @@ func (h *Handler) GetPlanets(c *gin.Context) {
 		return
 	}
 	userID := ctxUserID.(uint)
-	searchCode := c.DefaultQuery("searchCode", "")
+	searchCode := c.DefaultQuery("searchName", "")
 
 	planets, err := h.UseCase.GetPlanets(searchCode, userID)
 	if err != nil {
@@ -38,13 +40,14 @@ func (h *Handler) GetPlanets(c *gin.Context) {
 }
 
 // @Summary Получение планеты по ID
-// @Description Возвращает информацию о багаже по его ID
+// @Description Возвращает информацию о планете по ее ID
 // @Tags Планета
 // @Produce json
-// @Param planet_id path int true "ID планеты"
-// @Success 200 {object} model.Planet "Информация о багаже"
-// @Failure 400 {object} model.Planet "Некорректный запрос"
-// @Failure 500 {object} model.Planet "Внутренняя ошибка сервера"
+// @Param planet_id path int true "ID планетаа"
+// @Success 200 {object} model.Planet "Информация о планетае"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
 // @Router /planet/{planet_id} [get]
 func (h *Handler) GetPlanetByID(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
@@ -69,16 +72,19 @@ func (h *Handler) GetPlanetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"planet": planet})
 }
 
-// @Summary Создание нового планеты
+// @Summary Создание нового планетаа
 // @Description Создает новый планета с предоставленными данными
 // @Tags Планета
 // @Accept json
 // @Produce json
-// @Param searchCode query string false "Код планеты" Format(email)
+// @Param searchCode query string false "Код планетаа" Format(email)
 // @Param planet body model.PlanetRequest true "Пользовательский объект в формате JSON"
-// @Success 200 {object} model.PlanetsGetResponse "Список багажей"
-// @Failure 400 {object} model.PlanetsGetResponse "Некорректный запрос"
-// @Failure 500 {object} model.PlanetsGetResponse "Внутренняя ошибка сервера"
+// @Success 200 {object} model.PlanetsGetResponse "Список планетаей"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
+// @Failure 403 {object} model.ErrorResponse "У пользователя нет прав для этого запроса"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
 // @Router /planet/create [post]
 func (h *Handler) CreatePlanet(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
@@ -113,14 +119,17 @@ func (h *Handler) CreatePlanet(c *gin.Context) {
 }
 
 // @Summary Удаление планеты
-// @Description Удаляет планета по его ID
+// @Description Удаляет планету по его ID
 // @Tags Планета
 // @Produce json
-// @Param planet_id path int true "ID планеты"
-// @Param searchCode query string false "Код планеты" Format(email)
-// @Success 200 {object} model.PlanetsGetResponse "Список багажей"
-// @Failure 400 {object} model.PlanetsGetResponse "Некорректный запрос"
-// @Failure 500 {object} model.PlanetsGetResponse "Внутренняя ошибка сервера"
+// @Param planet_id path int true "ID планетаа"
+// @Param searchName query string false "Название планеты" Format(email)
+// @Success 200 {object} model.PlanetsGetResponse "Список планет"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
+// @Failure 403 {object} model.ErrorResponse "У пользователя нет прав для этого запроса"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
 // @Router /planet/{planet_id}/delete [delete]
 func (h *Handler) DeletePlanet(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
@@ -155,15 +164,18 @@ func (h *Handler) DeletePlanet(c *gin.Context) {
 
 }
 
-// @Summary Обновление информации о багаже
-// @Description Обновляет информацию о багаже по его ID
+// @Summary Обновление информации о планетe
+// @Description Обновляет информацию о планетe по его ID
 // @Tags Планета
 // @Accept json
 // @Produce json
 // @Param planet_id path int true "ID планеты"
-// @Success 200 {object} model.Planet "Информация о багаже"
-// @Failure 400 {object} model.Planet "Некорректный запрос"
-// @Failure 500 {object} model.Planet "Внутренняя ошибка сервера"
+// @Success 200 {object} model.Planet "Информация о планетe"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
+// @Failure 403 {object} model.ErrorResponse "У пользователя нет прав для этого запроса"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
 // @Router /planet/{planet_id}/update [put]
 func (h *Handler) UpdatePlanet(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
@@ -204,16 +216,18 @@ func (h *Handler) UpdatePlanet(c *gin.Context) {
 
 }
 
-// @Summary Добавление планеты к доставке
-// @Description Добавляет планета к доставке по его ID
+// @Summary Добавление планеты к созвездии
+// @Description Добавляет планету к созвездию по ее ID
 // @Tags Планета
 // @Produce json
 // @Param planet_id path int true "ID планеты"
-// @Param searchCode query string false "Код планеты" Format(email)
-// @Success 200 {object} model.PlanetsGetResponse  "Список багажей"
-// @Failure 400 {object} model.PlanetsGetResponse  "Некорректный запрос"
-// @Failure 500 {object} model.PlanetsGetResponse  "Внутренняя ошибка сервера"
-// @Router /planet/{planet_id}/constellation [post]
+// @Param searchName query string false "Код планеты" Format(email)
+// @Success 200 {object} model.PlanetsGetResponse  "Список планет"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
+// @Router /planet/{planet_id}/constellation	 [post]
 func (h *Handler) AddPlanetToConstellation(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
@@ -222,7 +236,7 @@ func (h *Handler) AddPlanetToConstellation(c *gin.Context) {
 	}
 	userID := ctxUserID.(uint)
 
-	searchCode := c.DefaultQuery("searchCode", "")
+	searchCode := c.DefaultQuery("searchName", "")
 
 	planetID, err := strconv.Atoi(c.Param("planet_id"))
 	if err != nil {
@@ -243,15 +257,17 @@ func (h *Handler) AddPlanetToConstellation(c *gin.Context) {
 }
 
 // @Summary Удаление планеты из созвездия
-// @Description Удаляет планета из созвездия по его ID
+// @Description Удаляет планета из созвездия по еe ID
 // @Tags Планета
 // @Produce json
 // @Param planet_id path int true "ID планеты"
-// @Param searchCode query string false "Код планеты" Format(email)
-// @Success 200 {object} model.PlanetsGetResponse "Список багажей"
-// @Failure 400 {object} model.PlanetsGetResponse "Некорректный запрос"
-// @Failure 500 {object} model.PlanetsGetResponse "Внутренняя ошибка сервера"
-// @Router /planets/{planet_id}/constellation [post]
+// @Param searchName query string false "Код планеты" Format(email)
+// @Success 200 {object} model.PlanetsGetResponse "Список планет"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
+// @Router /planet/{planet_id}/constellation [delete]
 func (h *Handler) RemovePlanetFromConstellation(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
@@ -259,7 +275,7 @@ func (h *Handler) RemovePlanetFromConstellation(c *gin.Context) {
 		return
 	}
 	userID := ctxUserID.(uint)
-	searchCode := c.DefaultQuery("searchCode", "")
+	searchCode := c.DefaultQuery("searchName", "")
 	planetID, err := strconv.Atoi(c.Param("planet_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД планеты"})
@@ -283,17 +299,19 @@ func (h *Handler) RemovePlanetFromConstellation(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"constellation": constellation})
 }
 
-// @Summary Добавление изображения к багажу
-// @Description Добавляет изображение к багажу по его ID
+// @Summary Добавление изображения к планете
+// @Description Добавляет изображение к планете по ее ID
 // @Tags Планета
 // @Accept mpfd
 // @Produce json
-// @Param planet_id path int true "ID планеты"
+// @Param planet_id path int true "ID планета"
 // @Param image formData file true "Изображение планеты"
-// @Success 200 {object} model.Planet "Информация о багаже с изображением"
-// @Success 200 {object} model.Planet
-// @Failure 400 {object} model.Planet "Некорректный запрос"
-// @Failure 500 {object} model.Planet "Внутренняя ошибка сервера"
+// @Success 200 {object} model.Planet "Информация о планете с изображением"
+// @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
+// @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
+// @Failure 403 {object} model.ErrorResponse "У пользователя нет прав для этого запроса"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
 // @Router /planet/{planet_id}/image [post]
 func (h *Handler) AddPlanetImage(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")

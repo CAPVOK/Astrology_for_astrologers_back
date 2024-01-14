@@ -109,7 +109,7 @@ func (r *Repository) AddPlanetToConstellation(planetID, userID uint) error {
 	}
 	if err := r.db.Table("constellation_planets").
 		Create(&constellationPlanet).Error; err != nil {
-		return errors.New("ошибка при создании связи между доставкой и багажом")
+		return errors.New("ошибка при создании связи между доставкой и планетаом")
 	}
 	return nil
 }
@@ -123,7 +123,7 @@ func (r *Repository) RemovePlanetFromConstellation(planetID, userID uint) error 
 	}
 	if err := r.db.Table("constellation_planets").
 		Delete(&constellationPlanet).Error; err != nil {
-		return errors.New("ошибка удаления связи между доставкой и багажом")
+		return errors.New("ошибка удаления связи между доставкой и планетаом")
 	}
 	return nil
 }

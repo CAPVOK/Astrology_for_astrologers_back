@@ -12,6 +12,16 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
+// @title BagTracker RestAPI
+// @version 1.0
+// @description API server for Space application
+
+// @host http://localhost:8081
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 // Run запускает приложение.
 func (app *Application) Run() {
 	r := gin.Default()

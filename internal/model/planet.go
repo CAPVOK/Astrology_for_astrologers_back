@@ -1,7 +1,7 @@
 // Package model ...
 package model
 
-// Planet представляет информацию о багаже.
+// Planet представляет информацию о планетае.
 type Planet struct {
 	PlanetID     uint   `gorm:"type:serial;primarykey" json:"planetId"`
 	Name         string `json:"name" example:"Планета"`
@@ -26,7 +26,7 @@ type PlanetRequest struct {
 	Color2     string `json:"color2" example:"#8a8a8a"`
 }
 
-// PlanetsGetResponse представляет ответ с информацией о багажах и идентификаторе созвездия.
+// PlanetsGetResponse представляет ответ с информацией о планетаах и идентификаторе созвездия.
 type PlanetsGetResponse struct {
 	Planets         []Planet `json:"planets"`
 	ConstellationID uint     `json:"constellationId" example:"1"`

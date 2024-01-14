@@ -1,89 +1,28 @@
+basePath: /
 definitions:
-  model.Planet:
-    properties:
-      airline:
-        example: AirlineX
-        type: string
-      planet_code:
-        example: ABC123
-        type: string
-      planet_id:
-        type: integer
-      planet_status:
-        example: checked
-        type: string
-      planet_type:
-        example: suitcase
-        type: string
-      owner_name:
-        example: John Doe
-        type: string
-      pasport_details:
-        example: "123456789"
-        type: string
-      photo:
-        example: http://example.com/planet.jpg
-        type: string
-      size:
-        example: large
-        type: string
-      weight:
-        example: 23.5
-        type: number
-    type: object
-  model.PlanetRequest:
-    properties:
-      airline:
-        example: AirlineX
-        type: string
-      planet_code:
-        example: ABC123
-        type: string
-      planet_type:
-        example: suitcase
-        type: string
-      owner_name:
-        example: John Doe
-        type: string
-      pasport_details:
-        example: "123456789"
-        type: string
-      size:
-        example: large
-        type: string
-      weight:
-        example: 23.5
-        type: number
-    type: object
-  model.PlanetsGetResponse:
-    properties:
-      planets:
-        items:
-          $ref: '#/definitions/model.Planet'
-        type: array
-      constellation_id:
-        example: 1
-        type: integer
-    type: object
   model.ConstellationGetResponse:
     properties:
-      planets:
-        items:
-          $ref: '#/definitions/model.Planet'
-        type: array
       confirmation_date:
         type: string
       creation_date:
         type: string
-      constellation_id:
-        type: integer
-      constellation_status:
-        type: string
-      flight_number:
+      end_date:
         type: string
       formation_date:
         type: string
       full_name:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      planets:
+        items:
+          $ref: '#/definitions/model.PlanetInConstellation'
+        type: array
+      start_date:
+        type: string
+      status:
         type: string
     type: object
   model.ConstellationRequest:
@@ -92,26 +31,122 @@ definitions:
         type: string
       creation_date:
         type: string
-      constellation_id:
-        type: integer
-      constellation_status:
-        type: string
-      flight_number:
+      end_date:
         type: string
       formation_date:
         type: string
       full_name:
         type: string
+      id:
+        type: integer
+      name:
+        type: string
+      start_date:
+        type: string
+      status:
+        type: string
     type: object
-  model.ConstellationUpdateFlightNumberRequest:
+  model.ConstellationUpdateRequest:
     properties:
-      flight_number:
+      end_date:
+        type: string
+      name:
+        type: string
+      start_date:
         type: string
     type: object
   model.ConstellationUpdateStatusRequest:
     properties:
-      constellation_status:
+      constellationStatus:
         type: string
+    type: object
+  model.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  model.Planet:
+    properties:
+      color1:
+        example: '#ababab'
+        type: string
+      color2:
+        example: '#8a8a8a'
+        type: string
+      discovered:
+        example: Неизвестно
+        type: string
+      distance:
+        example: Неизвестно
+        type: string
+      imageName:
+        example: http://example.com/mars.jpg
+        type: string
+      info:
+        example: Неизвестно
+        type: string
+      mass:
+        example: Неизвестно
+        type: string
+      name:
+        example: Планета
+        type: string
+      planetId:
+        type: integer
+      status:
+        example: активна
+        type: string
+    type: object
+  model.PlanetInConstellation:
+    properties:
+      color1:
+        example: '#ababab'
+        type: string
+      color2:
+        example: '#8a8a8a'
+        type: string
+      id:
+        type: string
+      imageName:
+        example: http://example.com/mars.jpg
+        type: string
+      name:
+        example: Планета
+        type: string
+    type: object
+  model.PlanetRequest:
+    properties:
+      color1:
+        example: '#ababab'
+        type: string
+      color2:
+        example: '#8a8a8a'
+        type: string
+      discovered:
+        example: Неизвестно
+        type: string
+      distance:
+        example: Неизвестно
+        type: string
+      info:
+        example: Неизвестно
+        type: string
+      mass:
+        example: Неизвестно
+        type: string
+      name:
+        example: Планета
+        type: string
+    type: object
+  model.PlanetsGetResponse:
+    properties:
+      constellationId:
+        example: 1
+        type: integer
+      planets:
+        items:
+          $ref: '#/definitions/model.Planet'
+        type: array
     type: object
   model.Role:
     enum:
@@ -121,19 +156,6 @@ definitions:
     x-enum-varnames:
     - UserRole
     - ModeratorRole
-  model.User:
-    properties:
-      email:
-        type: string
-      full_name:
-        type: string
-      password:
-        type: string
-      role:
-        $ref: '#/definitions/model.Role'
-      user_id:
-        type: integer
-    type: object
   model.UserLoginRequest:
     properties:
       email:
@@ -141,46 +163,268 @@ definitions:
       password:
         type: string
     type: object
+  model.UserLoginResponse:
+    properties:
+      access_token:
+        type: string
+      full_name:
+        type: string
+      role:
+        $ref: '#/definitions/model.Role'
+    type: object
   model.UserRegisterRequest:
     properties:
       email:
         type: string
-      full_name:
+      fullName:
         type: string
       password:
         type: string
     type: object
+host: http://localhost:8081
 info:
   contact: {}
+  description: API server for Space application
+  title: BagTracker RestAPI
+  version: "1.0"
 paths:
-  /planet:
+  /constellation:
     get:
-      description: Возращает список всех активных планетаей
+      description: Возвращает список всех не удаленных созвездий
       parameters:
-      - description: Код планеты
+      - description: Начало даты формирования
         format: email
         in: query
-        name: searchCode
+        name: startFormationDate
+        type: string
+      - description: Конец даты формирования
+        format: email
+        in: query
+        name: endFormationDate
+        type: string
+      - description: Статус созвездия
+        format: email
+        in: query
+        name: constellationStatus
         type: string
       produces:
       - application/json
       responses:
         "200":
-          description: Список планетаей
+          description: Список созвездий
           schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
+            $ref: '#/definitions/model.ConstellationRequest'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
         "500":
-          description: Ошибка сервера
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Получение списка созвездий
+      tags:
+      - Созвездие
+  /constellation/{constellation_id}:
+    get:
+      description: Возвращает информацию о созвездии по её идентификатору
+      parameters:
+      - description: Идентификатор созвездия
+        in: path
+        name: constellation_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о созвездии
+          schema:
+            $ref: '#/definitions/model.ConstellationGetResponse'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Получение созвездия по идентификатору
+      tags:
+      - Созвездие
+  /constellation/{constellation_id}/delete:
+    delete:
+      description: Удаляет доставку по её идентификатору
+      parameters:
+      - description: Идентификатор созвездия
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Начало даты формирования
+        format: email
+        in: query
+        name: startFormationDate
+        type: string
+      - description: Конец даты формирования
+        format: email
+        in: query
+        name: endFormationDate
+        type: string
+      - description: Статус созвездия
+        format: email
+        in: query
+        name: constellationStatus
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список багажей
+          schema:
+            $ref: '#/definitions/model.ConstellationRequest'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Удаление созвездия
+      tags:
+      - Созвездие
+  /constellation/{constellation_id}/status/moderator:
+    put:
+      description: Обновляет статус чернового созвездия для юзера и обновляет статус
+        созвездия по идентификатору созвездия и новому статусу для модератора
+      parameters:
+      - description: Идентификатор созвездия
+        in: path
+        name: constellation_id
+        required: true
+        type: integer
+      - description: Новый статус созвездия
+        in: body
+        name: constellationStatus
+        required: true
+        schema:
+          $ref: '#/definitions/model.ConstellationUpdateStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о созвездии
+          schema:
+            $ref: '#/definitions/model.ConstellationGetResponse'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Обновление статуса созвездия
+      tags:
+      - Созвездие
+  /constellation/{constellation_id}/update:
+    put:
+      description: Обновляет поля созвездия по её идентификатору
+      parameters:
+      - description: Идентификатор созвездия
+        in: path
+        name: constellation_id
+        required: true
+        type: integer
+      - description: Новое созвездие
+        in: body
+        name: newConstellation
+        required: true
+        schema:
+          $ref: '#/definitions/model.ConstellationUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о созвездии
+          schema:
+            $ref: '#/definitions/model.ConstellationGetResponse'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Обновление созвездие
+      tags:
+      - Созвездие
+  /planet:
+    get:
+      description: Возращает список всех активных планет и ид черновой заявки
+      parameters:
+      - description: Название планеты
+        format: email
+        in: query
+        name: searchName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список планет
           schema:
             $ref: '#/definitions/model.PlanetsGetResponse'
-      summary: Получение списка планеты
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Получение списка планет
       tags:
       - Планета
   /planet/{planet_id}:
     get:
-      description: Возвращает информацию о планетае по его ID
+      description: Возвращает информацию о планете по ее ID
       parameters:
-      - description: ID планеты
+      - description: ID планетаа
         in: path
         name: planet_id
         required: true
@@ -193,87 +437,142 @@ paths:
           schema:
             $ref: '#/definitions/model.Planet'
         "400":
-          description: Некорректный запрос
+          description: Обработанная ошибка сервера
           schema:
-            $ref: '#/definitions/model.Planet'
+            $ref: '#/definitions/model.ErrorResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.Planet'
+            type: string
+      security:
+      - ApiKeyAuth: []
       summary: Получение планеты по ID
+      tags:
+      - Планета
+  /planet/{planet_id}/constellation:
+    delete:
+      description: Удаляет планета из созвездия по еe ID
+      parameters:
+      - description: ID планеты
+        in: path
+        name: planet_id
+        required: true
+        type: integer
+      - description: Код планеты
+        format: email
+        in: query
+        name: searchName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список планет
+          schema:
+            $ref: '#/definitions/model.PlanetsGetResponse'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Удаление планеты из созвездия
+      tags:
+      - Планета
+    post:
+      description: Добавляет планету к созвездию по ее ID
+      parameters:
+      - description: ID планеты
+        in: path
+        name: planet_id
+        required: true
+        type: integer
+      - description: Код планеты
+        format: email
+        in: query
+        name: searchName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список планет
+          schema:
+            $ref: '#/definitions/model.PlanetsGetResponse'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Добавление планеты к созвездии
       tags:
       - Планета
   /planet/{planet_id}/delete:
     delete:
-      description: Удаляет планета по его ID
+      description: Удаляет планету по его ID
       parameters:
-      - description: ID планеты
+      - description: ID планетаа
         in: path
         name: planet_id
         required: true
         type: integer
-      - description: Код планеты
+      - description: Название планеты
         format: email
         in: query
-        name: searchCode
+        name: searchName
         type: string
       produces:
       - application/json
       responses:
         "200":
-          description: Список планетаей
+          description: Список планет
           schema:
             $ref: '#/definitions/model.PlanetsGetResponse'
         "400":
-          description: Некорректный запрос
+          description: Обработанная ошибка сервера
           schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: У пользователя нет прав для этого запроса
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
+            type: string
+      security:
+      - ApiKeyAuth: []
       summary: Удаление планеты
-      tags:
-      - Планета
-  /planet/{planet_id}/constellation:
-    post:
-      description: Добавляет планета к доставке по его ID
-      parameters:
-      - description: ID планеты
-        in: path
-        name: planet_id
-        required: true
-        type: integer
-      - description: Код планеты
-        format: email
-        in: query
-        name: searchCode
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Список планетаей
-          schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
-        "400":
-          description: Некорректный запрос
-          schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
-      summary: Добавление планеты к доставке
       tags:
       - Планета
   /planet/{planet_id}/image:
     post:
       consumes:
       - multipart/form-data
-      description: Добавляет изображение к планетау по его ID
+      description: Добавляет изображение к планете по ее ID
       parameters:
-      - description: ID планеты
+      - description: ID планета
         in: path
         name: planet_id
         required: true
@@ -287,25 +586,35 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Информация о планете с изображением
           schema:
             $ref: '#/definitions/model.Planet'
         "400":
-          description: Некорректный запрос
+          description: Обработанная ошибка сервера
           schema:
-            $ref: '#/definitions/model.Planet'
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: У пользователя нет прав для этого запроса
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.Planet'
-      summary: Добавление изображения к планетау
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Добавление изображения к планете
       tags:
       - Планета
   /planet/{planet_id}/update:
     put:
       consumes:
       - application/json
-      description: Обновляет информацию о планетае по его ID
+      description: Обновляет информацию о планетe по его ID
       parameters:
       - description: ID планеты
         in: path
@@ -316,18 +625,28 @@ paths:
       - application/json
       responses:
         "200":
-          description: Информация о планетае
+          description: Информация о планетe
           schema:
             $ref: '#/definitions/model.Planet'
         "400":
-          description: Некорректный запрос
+          description: Обработанная ошибка сервера
           schema:
-            $ref: '#/definitions/model.Planet'
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: У пользователя нет прав для этого запроса
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.Planet'
-      summary: Обновление информации о планетае
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Обновление информации о планетe
       tags:
       - Планета
   /planet/create:
@@ -336,7 +655,7 @@ paths:
       - application/json
       description: Создает новый планета с предоставленными данными
       parameters:
-      - description: Код планеты
+      - description: Код планетаа
         format: email
         in: query
         name: searchCode
@@ -355,280 +674,26 @@ paths:
           schema:
             $ref: '#/definitions/model.PlanetsGetResponse'
         "400":
-          description: Некорректный запрос
+          description: Обработанная ошибка сервера
           schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: У пользователя нет прав для этого запроса
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
-      summary: Создание нового планеты
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Создание нового планетаа
       tags:
       - Планета
-  /planets/{planet_id}/constellation:
-    post:
-      description: Удаляет планета из созвездия по его ID
-      parameters:
-      - description: ID планеты
-        in: path
-        name: planet_id
-        required: true
-        type: integer
-      - description: Код планеты
-        format: email
-        in: query
-        name: searchCode
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Список планетаей
-          schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
-        "400":
-          description: Некорректный запрос
-          schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
-      summary: Удаление планеты из созвездия
-      tags:
-      - Планета
-  /constellation:
-    get:
-      description: Возвращает список всех не удаленных доставок
-      parameters:
-      - description: Номер рейса
-        format: email
-        in: query
-        name: searchFlightNumber
-        type: string
-      - description: Начало даты формирования
-        format: email
-        in: query
-        name: startFormationDate
-        type: string
-      - description: Конец даты формирования
-        format: email
-        in: query
-        name: endFormationDate
-        type: string
-      - description: Статус созвездия
-        format: email
-        in: query
-        name: constellationStatus
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Список доставок
-          schema:
-            $ref: '#/definitions/model.ConstellationRequest'
-        "500":
-          description: Ошибка сервера
-          schema:
-            $ref: '#/definitions/model.ConstellationRequest'
-      summary: Получение списка доставок
-      tags:
-      - Созвездие
-  /constellation/{id}:
-    get:
-      description: Возвращает информацию о доставке по её идентификатору
-      parameters:
-      - description: Идентификатор созвездия
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Информация о доставке
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-        "400":
-          description: Недопустимый идентификатор созвездия
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-        "500":
-          description: Ошибка сервера
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-      summary: Получение созвездия по идентификатору
-      tags:
-      - Созвездие
-  /constellation/{id}/delete:
-    delete:
-      description: Удаляет доставку по её идентификатору
-      parameters:
-      - description: Идентификатор созвездия
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Номер рейса
-        format: email
-        in: query
-        name: searchFlightNumber
-        type: string
-      - description: Начало даты формирования
-        format: email
-        in: query
-        name: startFormationDate
-        type: string
-      - description: Конец даты формирования
-        format: email
-        in: query
-        name: endFormationDate
-        type: string
-      - description: Статус созвездия
-        format: email
-        in: query
-        name: constellationStatus
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Список планетаей
-          schema:
-            $ref: '#/definitions/model.ConstellationRequest'
-        "400":
-          description: Недопустимый идентификатор созвездия
-          schema:
-            $ref: '#/definitions/model.ConstellationRequest'
-        "500":
-          description: Ошибка сервера
-          schema:
-            $ref: '#/definitions/model.ConstellationRequest'
-      summary: Удаление созвездия
-      tags:
-      - Созвездие
-  /constellation/{id}/status:
-    put:
-      description: Обновляет статус созвездия для модератора по идентификатору созвездия
-      parameters:
-      - description: Идентификатор созвездия
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Новый статус созвездия
-        in: body
-        name: constellationStatus
-        required: true
-        schema:
-          $ref: '#/definitions/model.ConstellationUpdateStatusRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Информация о доставке
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-        "400":
-          description: Недопустимый идентификатор созвездия или ошибка чтения JSON
-            объекта
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-        "500":
-          description: Ошибка сервера
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-      summary: Обновление статуса созвездия для модератора
-      tags:
-      - Созвездие
-  /constellation/{id}/update:
-    put:
-      description: Обновляет номер рейса для созвездия по её идентификатору
-      parameters:
-      - description: Идентификатор созвездия
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Новый номер рейса
-        in: body
-        name: flightNumber
-        required: true
-        schema:
-          $ref: '#/definitions/model.ConstellationUpdateFlightNumberRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Информация о доставке
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-        "400":
-          description: Недопустимый идентификатор созвездия или ошибка чтения JSON
-            объекта
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-        "500":
-          description: Ошибка сервера
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-      summary: Обновление номера рейса созвездия
-      tags:
-      - Созвездие
-  /constellation/{id}/user:
-    put:
-      description: Обновляет статус созвездия для пользователя по идентификатору созвездия
-      parameters:
-      - description: Идентификатор созвездия
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Информация о доставке
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-        "400":
-          description: Недопустимый идентификатор созвездия
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-        "500":
-          description: Ошибка сервера
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-      summary: Обновление статуса созвездия для пользователя
-      tags:
-      - Созвездие
-  /user/:
-    get:
-      description: Получение данных пользователя по его идентификатору
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Успешный ответ
-          schema:
-            items:
-              $ref: '#/definitions/model.User'
-            type: array
-        "400":
-          description: Неверный запрос
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Получить пользователя по идентификатору
   /user/login:
     post:
       consumes:
@@ -645,23 +710,17 @@ paths:
       - application/json
       responses:
         "200":
-          description: Успешный ответ
+          description: Токен
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/model.UserLoginResponse'
         "400":
-          description: Неверный запрос
+          description: Обработанная ошибка сервера
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: Вход пользователя
       tags:
       - Пользователь
@@ -674,49 +733,18 @@ paths:
         "200":
           description: Успешный ответ
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
         "400":
-          description: Неверный запрос
+          description: Обработанная ошибка сервера
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
+      security:
+      - ApiKeyAuth: []
       summary: Выход пользователя
-      tags:
-      - Пользователь
-  /user/refreshtoken:
-    post:
-      description: Обновление пары токенов
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Успешный ответ
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "400":
-          description: Неверный запрос
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Обновление токенов
       tags:
       - Пользователь
   /user/register:
@@ -734,13 +762,24 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Успешно зарегистрированный пользователь
+        "200":
+          description: Токен
           schema:
-            items:
-              $ref: '#/definitions/model.User'
-            type: array
+            $ref: '#/definitions/model.UserLoginResponse'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
       summary: Регистрация нового пользователя.
       tags:
       - Пользователь
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
