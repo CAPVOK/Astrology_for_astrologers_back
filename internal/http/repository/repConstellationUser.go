@@ -56,7 +56,7 @@ func (r *Repository) DeleteConstellationUser(constellationID, userID uint) error
 		Where("constellation_id = ? AND user_id = ? AND constellation_status = ?", constellationID, userID, model.CONSTELLATION_STATUS_DRAFT).
 		First(&constellation).
 		Error; err != nil {
-		return errors.New("созвездие не найдена или не принадлежит указанному пользователю")
+		return errors.New("созвездие не найдено или не принадлежит указанному пользователю")
 	}
 	tx := r.db.Begin()
 	if err := tx.Where("constellation_id = ?", constellationID).Delete(&model.ConstellationPlanet{}).Error; err != nil {
@@ -78,7 +78,7 @@ func (r *Repository) UpdateConstellationUser(constellationID uint, userID uint, 
 		Where("constellation_id = ? AND user_id = ? AND constellation_status = ?", constellationID, userID, model.CONSTELLATION_STATUS_DRAFT).
 		First(&constellation).
 		Error; err != nil {
-		return errors.New("созвездие не найдена или не принадлежит указанному пользователю")
+		return errors.New("созвездие не найдено или не принадлежит указанному пользователю")
 	}
 	if err := r.db.Table("constellations").
 		Model(&constellation).
@@ -95,7 +95,7 @@ func (r *Repository) UpdateConstellationStatusUser(constellationID, userID uint)
 		Where("constellation_id = ? AND user_id = ? AND constellation_status = ?", constellationID, userID, model.CONSTELLATION_STATUS_DRAFT).
 		First(&constellation).
 		Error; err != nil {
-		return errors.New("созвездие не найдена, или не принадлежит указанному пользователю, или не имеет статус черновик")
+		return errors.New("созвездие не найдено,оили не принадлежит указанному пользователю, или не имеет статус черновик")
 	}
 	constellation.ConstellationStatus = model.CONSTELLATION_STATUS_WORK
 	currentTime := time.Now()

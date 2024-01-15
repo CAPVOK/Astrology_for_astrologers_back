@@ -232,39 +232,6 @@ paths:
       tags:
       - Созвездие
   /constellation/{constellation_id}:
-    get:
-      description: Возвращает информацию о созвездии по её идентификатору
-      parameters:
-      - description: Идентификатор созвездия
-        in: path
-        name: constellation_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Информация о созвездии
-          schema:
-            $ref: '#/definitions/model.ConstellationGetResponse'
-        "400":
-          description: Обработанная ошибка сервера
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "401":
-          description: Пользователь не авторизован
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            type: string
-      security:
-      - ApiKeyAuth: []
-      summary: Получение созвездия по идентификатору
-      tags:
-      - Созвездие
-  /constellation/{constellation_id}/delete:
     delete:
       description: Удаляет доставку по её идентификатору
       parameters:
@@ -312,7 +279,39 @@ paths:
       summary: Удаление созвездия
       tags:
       - Созвездие
-  /constellation/{constellation_id}/status/moderator:
+    get:
+      description: Возвращает информацию о созвездии по её идентификатору
+      parameters:
+      - description: Идентификатор созвездия
+        in: path
+        name: constellation_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о созвездии
+          schema:
+            $ref: '#/definitions/model.ConstellationGetResponse'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Получение созвездия по идентификатору
+      tags:
+      - Созвездие
+  /constellation/{constellation_id}/status:
     put:
       description: Обновляет статус чернового созвездия для юзера и обновляет статус
         созвездия по идентификатору созвездия и новому статусу для модератора
@@ -420,7 +419,92 @@ paths:
       summary: Получение списка планет
       tags:
       - Планета
+    post:
+      consumes:
+      - application/json
+      description: Создает новую планету с предоставленными данными
+      parameters:
+      - description: Название планеты
+        format: email
+        in: query
+        name: searchName
+        type: string
+      - description: Пользовательский объект в формате JSON
+        in: body
+        name: planet
+        required: true
+        schema:
+          $ref: '#/definitions/model.PlanetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список планет
+          schema:
+            $ref: '#/definitions/model.PlanetsGetResponse'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: У пользователя нет прав для этого запроса
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Создание новой планеты
+      tags:
+      - Планета
   /planet/{planet_id}:
+    delete:
+      description: Удаляет планету по его ID
+      parameters:
+      - description: ID планетаа
+        in: path
+        name: planet_id
+        required: true
+        type: integer
+      - description: Название планеты
+        format: email
+        in: query
+        name: searchName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список планет
+          schema:
+            $ref: '#/definitions/model.PlanetsGetResponse'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: У пользователя нет прав для этого запроса
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Удаление планеты
+      tags:
+      - Планета
     get:
       description: Возвращает информацию о планете по ее ID
       parameters:
@@ -447,6 +531,44 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Получение планеты по ID
+      tags:
+      - Планета
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о планетe по его ID
+      parameters:
+      - description: ID планеты
+        in: path
+        name: planet_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о планетe
+          schema:
+            $ref: '#/definitions/model.Planet'
+        "400":
+          description: Обработанная ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: У пользователя нет прав для этого запроса
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Обновление информации о планетe
       tags:
       - Планета
   /planet/{planet_id}/constellation:
@@ -524,48 +646,6 @@ paths:
       summary: Добавление планеты к созвездии
       tags:
       - Планета
-  /planet/{planet_id}/delete:
-    delete:
-      description: Удаляет планету по его ID
-      parameters:
-      - description: ID планетаа
-        in: path
-        name: planet_id
-        required: true
-        type: integer
-      - description: Название планеты
-        format: email
-        in: query
-        name: searchName
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Список планет
-          schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
-        "400":
-          description: Обработанная ошибка сервера
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "401":
-          description: Пользователь не авторизован
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "403":
-          description: У пользователя нет прав для этого запроса
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            type: string
-      security:
-      - ApiKeyAuth: []
-      summary: Удаление планеты
-      tags:
-      - Планета
   /planet/{planet_id}/image:
     post:
       consumes:
@@ -608,90 +688,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Добавление изображения к планете
-      tags:
-      - Планета
-  /planet/{planet_id}/update:
-    put:
-      consumes:
-      - application/json
-      description: Обновляет информацию о планетe по его ID
-      parameters:
-      - description: ID планеты
-        in: path
-        name: planet_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Информация о планетe
-          schema:
-            $ref: '#/definitions/model.Planet'
-        "400":
-          description: Обработанная ошибка сервера
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "401":
-          description: Пользователь не авторизован
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "403":
-          description: У пользователя нет прав для этого запроса
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            type: string
-      security:
-      - ApiKeyAuth: []
-      summary: Обновление информации о планетe
-      tags:
-      - Планета
-  /planet/create:
-    post:
-      consumes:
-      - application/json
-      description: Создает новый планета с предоставленными данными
-      parameters:
-      - description: Код планетаа
-        format: email
-        in: query
-        name: searchCode
-        type: string
-      - description: Пользовательский объект в формате JSON
-        in: body
-        name: planet
-        required: true
-        schema:
-          $ref: '#/definitions/model.PlanetRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Список планетаей
-          schema:
-            $ref: '#/definitions/model.PlanetsGetResponse'
-        "400":
-          description: Обработанная ошибка сервера
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "401":
-          description: Пользователь не авторизован
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "403":
-          description: У пользователя нет прав для этого запроса
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            type: string
-      security:
-      - ApiKeyAuth: []
-      summary: Создание нового планетаа
       tags:
       - Планета
   /user/login:

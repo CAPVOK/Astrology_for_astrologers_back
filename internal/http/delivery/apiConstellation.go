@@ -104,7 +104,7 @@ func (h *Handler) GetConstellationByID(c *gin.Context) {
 // @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
 // @Failure 500 {string} string "Внутренняя ошибка сервера"
 // @Security ApiKeyAuth
-// @Router /constellation/{constellation_id}/delete [delete]
+// @Router /constellation/{constellation_id} [delete]
 func (h *Handler) DeleteConstellation(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
@@ -298,7 +298,7 @@ func (h *Handler) UpdateConstellation(c *gin.Context) {
 // @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
 // @Failure 500 {string} string "Внутренняя ошибка сервера"
 // @Security ApiKeyAuth
-// @Router /constellation/{constellation_id}/status/moderator [put]
+// @Router /constellation/{constellation_id}/status [put]
 func (h *Handler) UpdateConstellationStatus(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {

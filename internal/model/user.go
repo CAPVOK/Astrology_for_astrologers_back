@@ -2,7 +2,7 @@ package model
 
 type User struct {
 	UserID   uint   `gorm:"autoIncrement;primarykey" json:"id"`
-	FullName string `json:"full_name"`
+	FullName string `json:"fullName"`
 	Email    string `json:"email"`
 	Password string `json:"password`
 	Role     Role   `json:"role"`
@@ -17,7 +17,7 @@ type UserLoginRequest struct {
 	Password string `json:"password"`
 }
 type UserLoginResponse struct {
-	AccessToken string `json:"access_token"`
-	FullName    string `json:"full_name"`
+	AccessToken string `json:"accessToken"`
+	FullName    string `json:"fullName"`
 	Role        Role   `json:"role"`
 }

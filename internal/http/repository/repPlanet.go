@@ -24,7 +24,7 @@ func (r *Repository) GetPlanets(searchName string, userID uint) (model.PlanetsGe
 		Where("planets.planet_status = ? AND planets.name LIKE ?", model.PLANET_STATUS_ACTIVE, searchName).
 		Order("planet_id").
 		Scan(&planets).Error; err != nil {
-		return model.PlanetsGetResponse{}, errors.New("ошибка нахождения списка планеты")
+		return model.PlanetsGetResponse{}, errors.New("ошибка нахождения списка планет")
 	}
 	planetResponse := model.PlanetsGetResponse{
 		Planets:         planets,
@@ -38,7 +38,7 @@ func (r *Repository) GetPlanetByID(planetID, userID uint) (model.Planet, error) 
 	if err := r.db.Table("planets").
 		Where("planet_status = ? AND planet_id = ?", model.PLANET_STATUS_ACTIVE, planetID).
 		First(&planet).Error; err != nil {
-		return model.Planet{}, errors.New("ошибка при получении активного планеты из БД")
+		return model.Planet{}, errors.New("ошибка при получении активной планеты из БД")
 	}
 	return planet, nil
 }
@@ -72,7 +72,7 @@ func (r *Repository) UpdatePlanet(planetID, userID uint, planet model.Planet) er
 		Model(&model.Planet{}).
 		Where("planet_id = ? AND planet_status = ?", planetID, model.PLANET_STATUS_ACTIVE).
 		Updates(planet).Error; err != nil {
-		return errors.New("ошибка при обновлении информации о питомце в БД")
+		return errors.New("ошибка при обновлении информации планеты БД")
 	}
 
 	return nil
@@ -109,7 +109,7 @@ func (r *Repository) AddPlanetToConstellation(planetID, userID uint) error {
 	}
 	if err := r.db.Table("constellation_planets").
 		Create(&constellationPlanet).Error; err != nil {
-		return errors.New("ошибка при создании связи между доставкой и планетаом")
+		return errors.New("не удалось добавить планеты, возможно она уже добавлена")
 	}
 	return nil
 }
@@ -123,7 +123,7 @@ func (r *Repository) RemovePlanetFromConstellation(planetID, userID uint) error 
 	}
 	if err := r.db.Table("constellation_planets").
 		Delete(&constellationPlanet).Error; err != nil {
-		return errors.New("ошибка удаления связи между доставкой и планетаом")
+		return errors.New("ошибка удаления связи между созвездием и планетой")
 	}
 	return nil
 }

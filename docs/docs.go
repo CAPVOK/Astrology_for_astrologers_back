@@ -131,9 +131,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/constellation/{constellation_id}/delete": {
+            },
             "delete": {
                 "security": [
                     {
@@ -206,7 +204,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/constellation/{constellation_id}/status/moderator": {
+        "/constellation/{constellation_id}/status": {
             "put": {
                 "security": [
                     {
@@ -372,16 +370,14 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/planet/create": {
+            },
             "post": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Создает новый планета с предоставленными данными",
+                "description": "Создает новую планету с предоставленными данными",
                 "consumes": [
                     "application/json"
                 ],
@@ -391,13 +387,13 @@ const docTemplate = `{
                 "tags": [
                     "Планета"
                 ],
-                "summary": "Создание нового планетаа",
+                "summary": "Создание новой планеты",
                 "parameters": [
                     {
                         "type": "string",
                         "format": "email",
-                        "description": "Код планетаа",
-                        "name": "searchCode",
+                        "description": "Название планеты",
+                        "name": "searchName",
                         "in": "query"
                     },
                     {
@@ -412,7 +408,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список планетаей",
+                        "description": "Список планет",
                         "schema": {
                             "$ref": "#/definitions/model.PlanetsGetResponse"
                         }
@@ -477,6 +473,128 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Обработанная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Обновляет информацию о планетe по его ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Планета"
+                ],
+                "summary": "Обновление информации о планетe",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID планеты",
+                        "name": "planet_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Информация о планетe",
+                        "schema": {
+                            "$ref": "#/definitions/model.Planet"
+                        }
+                    },
+                    "400": {
+                        "description": "Обработанная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "У пользователя нет прав для этого запроса",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Удаляет планету по его ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Планета"
+                ],
+                "summary": "Удаление планеты",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID планетаа",
+                        "name": "planet_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Название планеты",
+                        "name": "searchName",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список планет",
+                        "schema": {
+                            "$ref": "#/definitions/model.PlanetsGetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Обработанная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "У пользователя нет прав для этого запроса",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
@@ -606,71 +724,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/planet/{planet_id}/delete": {
-            "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Удаляет планету по его ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Планета"
-                ],
-                "summary": "Удаление планеты",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID планетаа",
-                        "name": "planet_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "format": "email",
-                        "description": "Название планеты",
-                        "name": "searchName",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Список планет",
-                        "schema": {
-                            "$ref": "#/definitions/model.PlanetsGetResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Обработанная ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Пользователь не авторизован",
-                        "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "У пользователя нет прав для этого запроса",
-                        "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/planet/{planet_id}/image": {
             "post": {
                 "security": [
@@ -708,67 +761,6 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Информация о планете с изображением",
-                        "schema": {
-                            "$ref": "#/definitions/model.Planet"
-                        }
-                    },
-                    "400": {
-                        "description": "Обработанная ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Пользователь не авторизован",
-                        "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "У пользователя нет прав для этого запроса",
-                        "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/planet/{planet_id}/update": {
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Обновляет информацию о планетe по его ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Планета"
-                ],
-                "summary": "Обновление информации о планетe",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID планеты",
-                        "name": "planet_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Информация о планетe",
                         "schema": {
                             "$ref": "#/definitions/model.Planet"
                         }

@@ -37,11 +37,11 @@ func (app *Application) Run() {
 	{
 		PlanetGroup.GET("/", middleware.Guest(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.GetPlanets)
 		PlanetGroup.GET("/:planet_id", middleware.Guest(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.GetPlanetByID)
-		PlanetGroup.DELETE("/:planet_id/delete", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.DeletePlanet)
-		PlanetGroup.POST("/create", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.CreatePlanet)
-		PlanetGroup.PUT("/:planet_id/update", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.UpdatePlanet)
+		PlanetGroup.DELETE("/:planet_id", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.DeletePlanet)
+		PlanetGroup.POST("/", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.CreatePlanet)
+		PlanetGroup.PUT("/:planet_id", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.UpdatePlanet)
 		PlanetGroup.POST("/:planet_id/constellation", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.AddPlanetToConstellation)
-		PlanetGroup.DELETE("/:planet_id/constellation/delete", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.RemovePlanetFromConstellation)
+		PlanetGroup.DELETE("/:planet_id/constellation", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.RemovePlanetFromConstellation)
 		PlanetGroup.POST("/:planet_id/image", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.AddPlanetImage)
 	}
 
@@ -50,11 +50,9 @@ func (app *Application) Run() {
 	{
 		ConstellationGroup.GET("/", app.Handler.GetConstellations)
 		ConstellationGroup.GET("/:id", app.Handler.GetConstellationByID)
-		ConstellationGroup.DELETE("/:id/delete", app.Handler.DeleteConstellation)
+		ConstellationGroup.DELETE("/:id", app.Handler.DeleteConstellation)
 		ConstellationGroup.PUT("/:id/update", app.Handler.UpdateConstellation)
 		ConstellationGroup.PUT("/:id/status", app.Handler.UpdateConstellationStatus)
-		/* ConstellationGroup.PUT("/:id/status/user", app.Handler.UpdateConstellationStatusUser) */
-		/* ConstellationGroup.PUT("/:id/status/moderator", app.Handler.UpdateConstellationStatusModerator) */
 	}
 
 	UserGroup := r.Group("/user")

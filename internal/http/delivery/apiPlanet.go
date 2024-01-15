@@ -72,20 +72,20 @@ func (h *Handler) GetPlanetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"planet": planet})
 }
 
-// @Summary Создание нового планетаа
-// @Description Создает новый планета с предоставленными данными
+// @Summary Создание новой планеты
+// @Description Создает новую планету с предоставленными данными
 // @Tags Планета
 // @Accept json
 // @Produce json
-// @Param searchCode query string false "Код планетаа" Format(email)
+// @Param searchName query string false "Название планеты" Format(email)
 // @Param planet body model.PlanetRequest true "Пользовательский объект в формате JSON"
-// @Success 200 {object} model.PlanetsGetResponse "Список планетаей"
+// @Success 200 {object} model.PlanetsGetResponse "Список планет"
 // @Failure 400 {object} model.ErrorResponse "Обработанная ошибка сервера"
 // @Failure 401 {object} model.ErrorResponse "Пользователь не авторизован"
 // @Failure 403 {object} model.ErrorResponse "У пользователя нет прав для этого запроса"
 // @Failure 500 {string} string "Внутренняя ошибка сервера"
 // @Security ApiKeyAuth
-// @Router /planet/create [post]
+// @Router /planet [post]
 func (h *Handler) CreatePlanet(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
@@ -93,7 +93,7 @@ func (h *Handler) CreatePlanet(c *gin.Context) {
 		return
 	}
 	userID := ctxUserID.(uint)
-	searchCode := c.DefaultQuery("searchCode", "")
+	searchCode := c.DefaultQuery("searchName", "")
 
 	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
 		var planet model.PlanetRequest
@@ -130,7 +130,7 @@ func (h *Handler) CreatePlanet(c *gin.Context) {
 // @Failure 403 {object} model.ErrorResponse "У пользователя нет прав для этого запроса"
 // @Failure 500 {string} string "Внутренняя ошибка сервера"
 // @Security ApiKeyAuth
-// @Router /planet/{planet_id}/delete [delete]
+// @Router /planet/{planet_id} [delete]
 func (h *Handler) DeletePlanet(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
@@ -176,7 +176,7 @@ func (h *Handler) DeletePlanet(c *gin.Context) {
 // @Failure 403 {object} model.ErrorResponse "У пользователя нет прав для этого запроса"
 // @Failure 500 {string} string "Внутренняя ошибка сервера"
 // @Security ApiKeyAuth
-// @Router /planet/{planet_id}/update [put]
+// @Router /planet/{planet_id} [put]
 func (h *Handler) UpdatePlanet(c *gin.Context) {
 	ctxUserID, exists := c.Get("userID")
 	if !exists {
