@@ -25,6 +25,7 @@ type ConstellationRequest struct {
 	ConfirmationDate    *time.Time `json:"confirmationDate"`
 	ConstellationStatus string     `json:"status"`
 	FullName            string     `json:"fullName"`
+	ModeratorName       *string    `json:"moderatorName"`
 }
 
 type ConstellationGetResponse struct {
@@ -37,6 +38,7 @@ type ConstellationGetResponse struct {
 	ConfirmationDate    *time.Time              `json:"confirmationDate"`
 	ConstellationStatus string                  `json:"status"`
 	FullName            string                  `json:"fullName"`
+	ModeratorName       *string                 `json:"moderatorName"`
 	Planets             []PlanetInConstellation `gorm:"many2many:constellationPlanets" json:"planets"`
 }
 

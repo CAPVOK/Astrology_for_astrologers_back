@@ -9,8 +9,9 @@ import (
 
 func (r *Repository) GetConstellationsModerator(searchName, startFormationDate, endFormationDate, constellationStatus string, moderatorID uint) ([]model.ConstellationRequest, error) {
 	query := r.db.Table("constellations").
-		Select("DISTINCT constellations.constellation_id, constellations.name, constellations.start_date, constellations.end_date, constellations.start_date, constellations.end_date, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, users.full_name").
-		Joins("JOIN users ON users.user_id = constellations.user_id").
+		Select("constellations.constellation_id, constellations.name, constellations.start_date, constellations.end_date, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, creator.full_name, moderator.full_name as moderator_name").
+		Joins("JOIN users creator ON creator.user_id = constellations.user_id").
+		Joins("LEFT JOIN users moderator ON moderator.user_id = constellations.moderator_id").
 		Where("constellations.constellation_status LIKE ? AND constellations.name LIKE ? AND constellations.constellation_status != ? AND constellations.constellation_status != ?", constellationStatus, searchName, model.CONSTELLATION_STATUS_DELETED, model.CONSTELLATION_STATUS_DRAFT)
 	if startFormationDate != "" && endFormationDate != "" {
 		query = query.Where("constellations.formation_date BETWEEN ? AND ?", startFormationDate, endFormationDate)
@@ -26,8 +27,9 @@ func (r *Repository) GetConstellationByIDModerator(constellationID, moderatorID 
 	var constellation model.ConstellationGetResponse
 	if err := r.db.
 		Table("constellations").
-		Select("constellations.constellation_id, constellations.name, constellations.start_date, constellations.end_date, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, users.full_name").
-		Joins("JOIN users ON users.user_id = constellations.user_id").
+		Select("constellations.constellation_id, constellations.name, constellations.start_date, constellations.end_date, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, creator.full_name, moderator.full_name as moderator_name").
+		Joins("JOIN users creator ON creator.user_id = constellations.user_id").
+		Joins("LEFT JOIN users moderator ON moderator.user_id = constellations.moderator_id").
 		Where("constellations.constellation_status != ? AND constellations.constellation_id = ?", model.CONSTELLATION_STATUS_DELETED, constellationID).
 		Scan(&constellation).Error; err != nil {
 		return model.ConstellationGetResponse{}, errors.New("не удалось найти созвездие. Ошибка 831781")
