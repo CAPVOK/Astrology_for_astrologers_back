@@ -17,7 +17,7 @@ func main() {
 	}
 
 	// Явно мигрировать только нужные таблицы
-	err = db.AutoMigrate(&model.User{})
+	err = db.AutoMigrate(&model.User{}, &model.Planet{}, &model.Constellation{}, &model.ConstellationPlanet{})
 	if err != nil {
 		panic("cant migrate db")
 	}
