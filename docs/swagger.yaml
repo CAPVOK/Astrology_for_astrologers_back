@@ -2,15 +2,15 @@ basePath: /
 definitions:
   model.ConstellationGetResponse:
     properties:
-      confirmation_date:
+      confirmationDate:
         type: string
-      creation_date:
+      creationDate:
         type: string
-      end_date:
+      endDate:
         type: string
-      formation_date:
+      formationDate:
         type: string
-      full_name:
+      fullName:
         type: string
       id:
         type: integer
@@ -20,39 +20,39 @@ definitions:
         items:
           $ref: '#/definitions/model.PlanetInConstellation'
         type: array
-      start_date:
+      startDate:
         type: string
       status:
         type: string
     type: object
   model.ConstellationRequest:
     properties:
-      confirmation_date:
+      confirmationDate:
         type: string
-      creation_date:
+      creationDate:
         type: string
-      end_date:
+      endDate:
         type: string
-      formation_date:
+      formationDate:
         type: string
-      full_name:
+      fullName:
         type: string
       id:
         type: integer
       name:
         type: string
-      start_date:
+      startDate:
         type: string
       status:
         type: string
     type: object
   model.ConstellationUpdateRequest:
     properties:
-      end_date:
+      endDate:
         type: string
       name:
         type: string
-      start_date:
+      startDate:
         type: string
     type: object
   model.ConstellationUpdateStatusRequest:
@@ -165,9 +165,9 @@ definitions:
     type: object
   model.UserLoginResponse:
     properties:
-      access_token:
+      accessToken:
         type: string
-      full_name:
+      fullName:
         type: string
       role:
         $ref: '#/definitions/model.Role'

@@ -9,7 +9,7 @@ import (
 
 func (r *Repository) GetConstellationsModerator(searchName, startFormationDate, endFormationDate, constellationStatus string, moderatorID uint) ([]model.ConstellationRequest, error) {
 	query := r.db.Table("constellations").
-		Select("DISTINCT constellations.constellation_id, constellations.name, constellations.start_date, constellations.end_date, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, users.full_name").
+		Select("DISTINCT constellations.constellation_id, constellations.name, constellations.start_date, constellations.end_date, constellations.start_date, constellations.end_date, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, users.full_name").
 		Joins("JOIN users ON users.user_id = constellations.user_id").
 		Where("constellations.constellation_status LIKE ? AND constellations.name LIKE ? AND constellations.constellation_status != ? AND constellations.constellation_status != ?", constellationStatus, searchName, model.CONSTELLATION_STATUS_DELETED, model.CONSTELLATION_STATUS_DRAFT)
 	if startFormationDate != "" && endFormationDate != "" {
@@ -26,23 +26,23 @@ func (r *Repository) GetConstellationByIDModerator(constellationID, moderatorID 
 	var constellation model.ConstellationGetResponse
 	if err := r.db.
 		Table("constellations").
-		Select("constellations.constellation_id, constellations.name, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, users.full_name").
+		Select("constellations.constellation_id, constellations.name, constellations.start_date, constellations.end_date, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, users.full_name").
 		Joins("JOIN users ON users.user_id = constellations.user_id").
 		Where("constellations.constellation_status != ? AND constellations.constellation_id = ?", model.CONSTELLATION_STATUS_DELETED, constellationID).
 		Scan(&constellation).Error; err != nil {
-		return model.ConstellationGetResponse{}, errors.New("ошибка получения созвездия по ИД")
+		return model.ConstellationGetResponse{}, errors.New("не удалось найти созвездие. Ошибка 831781")
 	}
 	var planets []model.PlanetInConstellation
 	if err := r.db.
 		Table("planets").
 		Joins("JOIN constellation_planets ON planets.planet_id = constellation_planets.planet_id").
-		Where("constellation_planets.constellation_id = ?", constellation.ConstellationID).
+		Where("constellation_planets.constellation_id = ?", constellationID).
 		Scan(&planets).Error; err != nil {
 		return model.ConstellationGetResponse{}, errors.New("ошибка получения планет для созвездия")
 	}
 	constellation.Planets = planets
 	if constellation.ConstellationID == 0 {
-		return constellation, errors.New("ошибка получения созвездия по ИД")
+		return constellation, errors.New("не удалось найти созвездие. Ошибка 882820")
 	}
 	return constellation, nil
 }

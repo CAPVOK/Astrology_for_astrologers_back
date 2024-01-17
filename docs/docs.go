@@ -926,19 +926,19 @@ const docTemplate = `{
         "model.ConstellationGetResponse": {
             "type": "object",
             "properties": {
-                "confirmation_date": {
+                "confirmationDate": {
                     "type": "string"
                 },
-                "creation_date": {
+                "creationDate": {
                     "type": "string"
                 },
-                "end_date": {
+                "endDate": {
                     "type": "string"
                 },
-                "formation_date": {
+                "formationDate": {
                     "type": "string"
                 },
-                "full_name": {
+                "fullName": {
                     "type": "string"
                 },
                 "id": {
@@ -953,7 +953,7 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.PlanetInConstellation"
                     }
                 },
-                "start_date": {
+                "startDate": {
                     "type": "string"
                 },
                 "status": {
@@ -964,19 +964,19 @@ const docTemplate = `{
         "model.ConstellationRequest": {
             "type": "object",
             "properties": {
-                "confirmation_date": {
+                "confirmationDate": {
                     "type": "string"
                 },
-                "creation_date": {
+                "creationDate": {
                     "type": "string"
                 },
-                "end_date": {
+                "endDate": {
                     "type": "string"
                 },
-                "formation_date": {
+                "formationDate": {
                     "type": "string"
                 },
-                "full_name": {
+                "fullName": {
                     "type": "string"
                 },
                 "id": {
@@ -985,7 +985,7 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "start_date": {
+                "startDate": {
                     "type": "string"
                 },
                 "status": {
@@ -996,13 +996,13 @@ const docTemplate = `{
         "model.ConstellationUpdateRequest": {
             "type": "object",
             "properties": {
-                "end_date": {
+                "endDate": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "start_date": {
+                "startDate": {
                     "type": "string"
                 }
             }
@@ -1164,10 +1164,10 @@ const docTemplate = `{
         "model.UserLoginResponse": {
             "type": "object",
             "properties": {
-                "access_token": {
+                "accessToken": {
                     "type": "string"
                 },
-                "full_name": {
+                "fullName": {
                     "type": "string"
                 },
                 "role": {

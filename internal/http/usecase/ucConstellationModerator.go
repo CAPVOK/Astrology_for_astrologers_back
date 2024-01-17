@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"log"
 	"strings"
 
 	"space/internal/model"
@@ -59,13 +58,8 @@ func (uc *UseCase) UpdateConstellationStatusModerator(constellationID, moderator
 	if moderatorID <= 0 {
 		return errors.New("недопустимый ИД модератора")
 	}
-	log.Println(constellationStatus)
 	if constellationStatus.ConstellationStatus == model.CONSTELLATION_STATUS_WORK {
-		data, err := uc.Repository.GetPlanets("", moderatorID)
-		if err != nil {
-			return err
-		}
-		err = uc.Repository.UpdateConstellationStatusUser(data.ConstellationID, moderatorID)
+		err := uc.Repository.UpdateConstellationStatusUser(constellationID, moderatorID)
 		if err != nil {
 			return err
 		}
@@ -76,7 +70,7 @@ func (uc *UseCase) UpdateConstellationStatusModerator(constellationID, moderator
 			return err
 		}
 		if constellation.ConstellationStatus != model.CONSTELLATION_STATUS_WORK {
-			return errors.New("текущее cозвездие еще не сформировано ")
+			return errors.New("текущее cозвездие не черновое. Ошибка 234549")
 		}
 		err = uc.Repository.UpdateConstellationStatusModerator(constellationID, moderatorID, constellationStatus)
 		if err != nil {
@@ -84,5 +78,5 @@ func (uc *UseCase) UpdateConstellationStatusModerator(constellationID, moderator
 		}
 		return nil
 	}
-	return errors.New("текущий статус созвездия уже завершен или отклонен")
+	return errors.New("текущий статус созвездия уже завершен или отклонен. Ошибка 309234")
 }

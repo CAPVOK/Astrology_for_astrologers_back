@@ -44,7 +44,7 @@ func (r *Repository) GetPlanetByID(planetID, userID uint) (model.Planet, error) 
 }
 
 func (r *Repository) CreatePlanet(userID uint, planet model.Planet) error {
-	if err := r.db.Create(planet).Error; err != nil {
+	if err := r.db.Create(&planet).Error; err != nil {
 		return errors.New("ошибка создания планеты")
 	}
 	return nil

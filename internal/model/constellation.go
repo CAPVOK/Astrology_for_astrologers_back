@@ -31,7 +31,7 @@ type ConstellationGetResponse struct {
 	ConstellationID     uint                    `gorm:"foreignkey:id" json:"id"`
 	Name                string                  `json:"name"`
 	StartDate           time.Time               `json:"startDate"`
-	EndDate             time.Time               `json:"end_date"`
+	EndDate             time.Time               `json:"endDate"`
 	CreationDate        time.Time               `json:"creationDate"`
 	FormationDate       *time.Time              `json:"formationDate"`
 	ConfirmationDate    *time.Time              `json:"confirmationDate"`

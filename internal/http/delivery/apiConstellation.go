@@ -324,7 +324,7 @@ func (h *Handler) UpdateConstellationStatus(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		constellation, err := h.UseCase.GetConstellationByIDUser(uint(constellationID), userID)
+		constellation, err := h.UseCase.GetConstellationByIDModerator(uint(constellationID), userID)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return

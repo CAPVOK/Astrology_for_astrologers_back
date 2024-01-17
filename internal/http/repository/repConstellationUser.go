@@ -25,11 +25,10 @@ func (r *Repository) GetConstellationsUser(searchName, startFormationDate, endFo
 
 func (r *Repository) GetConstellationByIDUser(constellationID, userID uint) (model.ConstellationGetResponse, error) {
 	var constellation model.ConstellationGetResponse
-	log.Println("_constellationID__", constellationID)
 	log.Println("userID", userID)
 	if err := r.db.
 		Table("constellations").
-		Select("constellations.constellation_id, constellations.name, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, users.full_name").
+		Select("constellations.constellation_id, constellations.name, constellations.start_date, constellations.end_date, constellations.creation_date, constellations.formation_date, constellations.confirmation_date, constellations.constellation_status, users.full_name").
 		Joins("JOIN users ON users.user_id = constellations.user_id").
 		Where("constellations.constellation_status != ? AND constellations.constellation_id = ? AND constellations.user_id = ?", model.CONSTELLATION_STATUS_DELETED, constellationID, userID).
 		Scan(&constellation).Error; err != nil {
