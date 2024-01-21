@@ -41,7 +41,7 @@ func (app *Application) Run() {
 		PlanetGroup.POST("/", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.CreatePlanet)
 		PlanetGroup.PUT("/:planet_id", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.UpdatePlanet)
 		PlanetGroup.POST("/:planet_id/constellation", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.AddPlanetToConstellation)
-		PlanetGroup.DELETE("/:planet_id/constellation", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.RemovePlanetFromConstellation)
+		/* PlanetGroup.DELETE("/:planet_id/constellation", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.RemovePlanetFromConstellation) */
 		PlanetGroup.POST("/:planet_id/image", middleware.Authenticate(app.Repository.GetRedisClient(), []byte("AccessSecretKey"), app.Repository), app.Handler.AddPlanetImage)
 	}
 
@@ -53,6 +53,7 @@ func (app *Application) Run() {
 		ConstellationGroup.DELETE("/:id", app.Handler.DeleteConstellation)
 		ConstellationGroup.PUT("/:id/update", app.Handler.UpdateConstellation)
 		ConstellationGroup.PUT("/:id/status", app.Handler.UpdateConstellationStatus)
+		ConstellationGroup.DELETE("/:id/planet", app.Handler.RemovePlanetFromConstellation) //
 	}
 
 	UserGroup := r.Group("/user")
