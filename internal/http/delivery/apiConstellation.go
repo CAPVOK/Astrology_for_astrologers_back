@@ -335,6 +335,10 @@ func (h *Handler) UpdateConstellationStatus(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, gin.H{"constellation": constellation})
 	} else {
+		if constellationStatus.ConstellationStatus == model.CONSTELLATION_STATUS_REJECTED || constellationStatus.ConstellationStatus == model.CONSTELLATION_STATUS_COMPLETED {
+			c.JSON(http.StatusForbidden, gin.H{"error": "не хватает прав"})
+			return
+		}
 		// юзер
 		id, err := h.UseCase.UpdateConstellationStatusUser(userID)
 		if err != nil {

@@ -938,6 +938,9 @@
                 "id": {
                     "type": "integer"
                 },
+                "moderatorName": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -975,6 +978,9 @@
                 },
                 "id": {
                     "type": "integer"
+                },
+                "moderatorName": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"

@@ -944,6 +944,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "moderatorName": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -981,6 +984,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "moderatorName": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
