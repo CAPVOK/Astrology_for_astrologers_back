@@ -10,9 +10,9 @@ import (
 type PlanetUseCase interface {
 }
 
-func (uc *UseCase) GetPlanets(searchCode string, userID uint) (model.PlanetsGetResponse, error) {
+func (uc *UseCase) GetPlanets(searchCode string, userID uint, page, pageSize int) (model.PlanetsGetResponse, error) {
 	searchCode = strings.ToUpper(searchCode + "%")
-	planets, err := uc.Repository.GetPlanets(searchCode, userID)
+	planets, err := uc.Repository.GetPlanets(searchCode, userID, page, pageSize)
 	if err != nil {
 		return model.PlanetsGetResponse{}, err
 	}

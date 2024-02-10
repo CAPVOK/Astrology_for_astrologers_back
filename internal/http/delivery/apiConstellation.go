@@ -340,7 +340,7 @@ func (h *Handler) UpdateConstellationStatus(c *gin.Context) {
 			return
 		}
 		// юзер
-		id, err := h.UseCase.UpdateConstellationStatusUser(userID)
+		id, err := h.UseCase.UpdateConstellationStatusUser(userID, 1, 10)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return

@@ -5,8 +5,12 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	"fmt"
+	"log"
+	"math/rand"
 	"space/internal/dsn"
 	"space/internal/model"
+	"time"
 )
 
 func main() {
@@ -17,14 +21,68 @@ func main() {
 	}
 
 	// Явно мигрировать только нужные таблицы
-	err = db.AutoMigrate(&model.User{}, &model.Planet{}, &model.Constellation{}, &model.ConstellationPlanet{})
+	/* err = db.AutoMigrate(&model.User{}, &model.Planet{}, &model.Constellation{}, &model.ConstellationPlanet{})
 	if err != nil {
 		panic("cant migrate db")
+	} */
+
+	err = insertRandomBaggages(db, numRecords)
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	fmt.Printf("%d записей успешно загружены в таблицу planets\n", numRecords)
+}
+
+const numRecords = 100000
+
+// Вставка случайных записей в таблицу baggages
+func insertRandomBaggages(db *gorm.DB, numRecords int) error {
+	for i := 1; i <= numRecords; i++ {
+		planet := model.Planet{
+			Name:         generatePlanetName(i),
+			Info:         "Неизвестно",
+			Discovered:   "Неизвестно",
+			Distance:     "Неизвестно",
+			Mass:         "Неизвестно",
+			PlanetStatus: model.PLANET_STATUS_ACTIVE,
+			Color2:       randomColor(),
+			Color1:       randomColor(),
+			ImageName:    "",
+		}
+		// Начало транзакции
+		tx := db.Begin()
+		if err := tx.Create(&planet).Error; err != nil {
+			// Откат транзакции при ошибке
+			tx.Rollback()
+			return err
+		}
+		// Фиксация транзакции
+		tx.Commit()
+		// Небольшая задержка для имитации реального использования
+		time.Sleep(time.Millisecond)
+	}
+	return nil
+}
+
+func generatePlanetName(i int) string {
+	// Генерация трех случайных букв капсом
+	randomLetters := make([]byte, 7)
+	for j := range randomLetters {
+		randomLetters[j] = byte('A' + rand.Intn('Z'-'A'+1))
+	}
+	return fmt.Sprintf("%s%d", randomLetters, i)
+}
+
+func randomColor() string {
+	r := rand.Intn(256)
+	g := rand.Intn(256)
+	b := rand.Intn(256)
+	return fmt.Sprintf("#%02x%02x%02x", r, g, b)
 }
 
 /*
-DELETE FROM constellations; 
+DELETE FROM constellations;
 Владимир, [17.01.2024 15:43]
 INSERT INTO
     planets (

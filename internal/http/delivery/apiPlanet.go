@@ -11,6 +11,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const defaultPageSize = "100"
+
 // @Summary Получение списка планет
 // @Description Возращает список всех активных планет и ид черновой заявки
 // @Tags Планета
@@ -29,8 +31,10 @@ func (h *Handler) GetPlanets(c *gin.Context) {
 	}
 	userID := ctxUserID.(uint)
 	searchCode := c.DefaultQuery("searchName", "")
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", defaultPageSize))
 
-	planets, err := h.UseCase.GetPlanets(searchCode, userID)
+	planets, err := h.UseCase.GetPlanets(searchCode, userID, page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -94,6 +98,8 @@ func (h *Handler) CreatePlanet(c *gin.Context) {
 	}
 	userID := ctxUserID.(uint)
 	searchCode := c.DefaultQuery("searchName", "")
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", defaultPageSize))
 
 	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
 		var planet model.PlanetRequest
@@ -106,7 +112,7 @@ func (h *Handler) CreatePlanet(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		planets, err := h.UseCase.GetPlanets(searchCode, userID)
+		planets, err := h.UseCase.GetPlanets(searchCode, userID, page, pageSize)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -139,6 +145,8 @@ func (h *Handler) DeletePlanet(c *gin.Context) {
 	}
 	userID := ctxUserID.(uint)
 	searchCode := c.DefaultQuery("searchName", "")
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", defaultPageSize))
 
 	if middleware.ModeratorOnly(h.UseCase.Repository, c) {
 		planetID, err := strconv.Atoi(c.Param("planet_id"))
@@ -151,7 +159,7 @@ func (h *Handler) DeletePlanet(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		planets, err := h.UseCase.GetPlanets(searchCode, userID)
+		planets, err := h.UseCase.GetPlanets(searchCode, userID, page, pageSize)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -237,6 +245,8 @@ func (h *Handler) AddPlanetToConstellation(c *gin.Context) {
 	userID := ctxUserID.(uint)
 
 	searchCode := c.DefaultQuery("searchName", "")
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", defaultPageSize))
 
 	planetID, err := strconv.Atoi(c.Param("planet_id"))
 	if err != nil {
@@ -248,7 +258,7 @@ func (h *Handler) AddPlanetToConstellation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	planets, err := h.UseCase.GetPlanets(searchCode, uint(userID))
+	planets, err := h.UseCase.GetPlanets(searchCode, uint(userID), page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -277,6 +287,9 @@ func (h *Handler) RemovePlanetFromConstellation(c *gin.Context) {
 	userID := ctxUserID.(uint)
 	searchCode := c.DefaultQuery("searchName", "")
 	planetID, err := strconv.Atoi(c.Param("planet_id"))
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", defaultPageSize))
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "недопустимый ИД планеты"})
 		return
@@ -286,7 +299,7 @@ func (h *Handler) RemovePlanetFromConstellation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	planets, err := h.UseCase.GetPlanets(searchCode, uint(userID))
+	planets, err := h.UseCase.GetPlanets(searchCode, uint(userID), page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

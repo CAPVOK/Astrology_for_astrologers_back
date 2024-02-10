@@ -62,11 +62,11 @@ func (uc *UseCase) UpdateConstellationUser(constellationID, userID uint, constel
 	return nil
 }
 
-func (uc *UseCase) UpdateConstellationStatusUser(userID uint) (uint, error) {
+func (uc *UseCase) UpdateConstellationStatusUser(userID uint, page, pageSize int) (uint, error) {
 	if userID <= 0 {
 		return 0, errors.New("недопустимый ИД пользователя")
 	}
-	data, err := uc.Repository.GetPlanets("", userID)
+	data, err := uc.Repository.GetPlanets("", userID, page, pageSize)
 	if err != nil {
 		return 0, err
 	}

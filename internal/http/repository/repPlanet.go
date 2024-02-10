@@ -11,7 +11,7 @@ type PlanetRepository interface {
 	GetPlanets(searchCode string, userID uint) (model.PlanetsGetResponse, error)
 }
 
-func (r *Repository) GetPlanets(searchName string, userID uint) (model.PlanetsGetResponse, error) {
+func (r *Repository) GetPlanets(searchName string, userID uint, page, pageSize int) (model.PlanetsGetResponse, error) {
 	var constellationID uint
 	if err := r.db.
 		Table("constellations").
@@ -19,13 +19,32 @@ func (r *Repository) GetPlanets(searchName string, userID uint) (model.PlanetsGe
 		Where("user_id = ? AND constellation_status = ?", userID, model.CONSTELLATION_STATUS_DRAFT).
 		Take(&constellationID).Error; err != nil {
 	}
+
 	var planets []model.Planet
-	if err := r.db.Table("planets").
+	offset := (page - 1) * pageSize
+	/* if err := r.db.Table("planets").
 		Where("planets.planet_status = ? AND planets.name LIKE ?", model.PLANET_STATUS_ACTIVE, searchName).
 		Order("planet_id").
 		Scan(&planets).Error; err != nil {
 		return model.PlanetsGetResponse{}, errors.New("ошибка нахождения списка планет")
+	} */
+	r.db.Table("planets").
+		Where("planets.planet_status = ? AND planets.name LIKE ?", model.PLANET_STATUS_ACTIVE, searchName)
+	r.db.Table("planets").
+		Where("planets.planet_status = ? AND planets.name LIKE ?", model.PLANET_STATUS_ACTIVE, searchName)
+	r.db.Table("planets").
+		Where("planets.planet_status = ? AND planets.name LIKE ?", model.PLANET_STATUS_ACTIVE, searchName)
+	r.db.Table("planets").
+		Where("planets.planet_status = ? AND planets.name LIKE ?", model.PLANET_STATUS_ACTIVE, searchName)
+
+	query := r.db.Table("planets").
+		Where("planets.planet_status = ? AND planets.name LIKE ?", model.PLANET_STATUS_ACTIVE, searchName).
+		Limit(pageSize).Offset(offset)
+
+	if err := query.Find(&planets).Error; err != nil {
+		return model.PlanetsGetResponse{}, err
 	}
+
 	planetResponse := model.PlanetsGetResponse{
 		Planets:         planets,
 		ConstellationID: constellationID,
